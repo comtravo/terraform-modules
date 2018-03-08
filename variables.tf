@@ -65,3 +65,9 @@ variable http_listeners {
   type        = "list"
   default     = []
 }
+
+variable "health_check" {
+  description = "Healthcheck for default target groups"
+  type        = "map"
+  default     = {}
+}

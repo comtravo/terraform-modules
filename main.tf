@@ -36,10 +36,26 @@ resource "aws_alb" "alb" {
 resource "aws_alb_target_group" "dummy_https" {
   count = "${local.enable_https}"
 
-  name     = "d-${var.name}-${lookup(var.https_listeners, "port")}"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = "${var.vpc_id}"
+  name                 = "d-${var.name}-${lookup(var.https_listeners, "port")}"
+  port                 = 80
+  protocol             = "HTTP"
+  vpc_id               = "${var.vpc_id}"
+  deregistration_delay = 10
+
+  health_check {
+    interval            = "${lookup(var.health_check, "interval", 30)}"
+    path                = "${lookup(var.health_check, "path", "/")}"
+    healthy_threshold   = "${lookup(var.health_check, "healthy_threshold", 2)}"
+    unhealthy_threshold = "${lookup(var.health_check, "unhealthy_threshold", 8)}"
+    timeout             = "${lookup(var.health_check, "timeout", 5)}"
+    matcher             = "${lookup(var.health_check, "matcher", 301)}"
+    port                = "traffic-port"
+  }
+
+  tags {
+    Environment = "${var.environment}"
+    Name        = "${var.name}"
+  }
 }
 
 resource "aws_alb_listener" "listener_https" {
@@ -69,10 +85,26 @@ resource "aws_alb_listener_certificate" "additional_certificates" {
 resource "aws_alb_target_group" "dummy_http" {
   count = "${local.enable_http}"
 
-  name     = "d-${var.name}-${var.http_listeners[count.index]}"
-  port     = 80
-  protocol = "HTTP"
-  vpc_id   = "${var.vpc_id}"
+  name                 = "d-${var.name}-${var.http_listeners[count.index]}"
+  port                 = 80
+  protocol             = "HTTP"
+  vpc_id               = "${var.vpc_id}"
+  deregistration_delay = 10
+
+  health_check {
+    interval            = "${lookup(var.health_check, "interval", 30)}"
+    path                = "${lookup(var.health_check, "path", "/")}"
+    healthy_threshold   = "${lookup(var.health_check, "healthy_threshold", 2)}"
+    unhealthy_threshold = "${lookup(var.health_check, "unhealthy_threshold", 8)}"
+    timeout             = "${lookup(var.health_check, "timeout", 5)}"
+    matcher             = "${lookup(var.health_check, "matcher", 301)}"
+    port                = "traffic-port"
+  }
+
+  tags {
+    Environment = "${var.environment}"
+    Name        = "${var.name}"
+  }
 }
 
 resource "aws_alb_listener" "listener_http" {
