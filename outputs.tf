@@ -27,3 +27,13 @@ output listener_arns {
   compact(concat(aws_alb_listener.listener_https.*.arn, aws_alb_listener.listener_http.*.arn))
   )}"
 }
+
+output default_target_group_http {
+  description = "default HTTP target group arn"
+  value       = "${aws_alb_target_group.dummy_http.arn}"
+}
+
+output default_target_group_https {
+  description = "default HTTPS target group arn"
+  value       = "${aws_alb_target_group.dummy_https.arn}"
+}
