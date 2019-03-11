@@ -1,2 +1,4 @@
 # terraform-aws-vpc
-A complete rewrite of our internal Terraform AWS VPC module
+Comtravo's legacy Terraform AWS VPC module
+
+# **Do not use this legacy module**
