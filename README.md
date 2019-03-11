@@ -11,7 +11,7 @@ This module is used to create VPCs in your AWS account. It is a complete rewrite
 * Configure optionally, your private and public subnet configurationby specifying the number of subnets to be created, newbits and netnum_offset. Subnetting should be handled externally to this module. See [CIDR subnetting in terraform](https://www.terraform.io/docs/configuration-0-11/interpolation.html#cidrsubnet-iprange-newbits-netnum-)
 
 * See [variable.tf](./variables.tf) for more configurable options.
-* See [outputs.tf](./outputs.tf) for more 
+* See [outputs.tf](./outputs.tf) for exposed outputs
 
 
 
