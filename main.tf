@@ -1,37 +1,37 @@
-locals {
-  default_tags = {
-    environment = "${terraform.workspace}"
-  }
-}
-
 resource "aws_vpc" "vpc" {
-  count                            = "${var.enable}"
-  cidr_block                       = "${var.cidr}"
-  enable_dns_support               = "${var.enable_dns_support}"
-  enable_dns_hostnames             = "${var.enable_dns_hostnames}"
-  assign_generated_ipv6_cidr_block = "${var.assign_generated_ipv6_cidr_block}"
+  count                = "${var.enable}"
+  cidr_block           = "${var.cidr}"
+  enable_dns_support   = "${var.enable_dns_support}"
+  enable_dns_hostnames = "${var.enable_dns_hostnames}"
 
-  tags = "${merge(map("Name", format("%s", var.vpc_name)), var.tags, local.default_tags)}"
+  tags {
+    Name        = "${var.vpc_name}-vpc"
+    environment = "${var.environment}"
+    depends_id  = "${var.depends_id}"
+  }
 }
 
 resource "aws_route53_zone" "net0ps" {
-  count = "${var.enable}"
-  name  = "${var.vpc_name}-net0ps.com"
+  count   = "${var.enable}"
+  name    = "${var.vpc_name}-net0ps.com"
+  vpc_id  = "${aws_vpc.vpc.id}"
+  comment = "Private hosted zone for ${var.environment}"
 
-  vpc {
-    vpc_id = "${aws_vpc.vpc.id}"
+  tags {
+    Name        = "${var.vpc_name}-private-zone"
+    environment = "${var.environment}"
   }
-
-  comment = "Private hosted zone for ${terraform.workspace}"
-  tags    = "${merge(map("Name", "${var.vpc_name}-private-zone"), var.tags, local.default_tags)}"
 }
 
 resource "aws_route53_zone" "subdomain" {
-  count   = "${var.enable && var.subdomain != "" ? 1 : 0}"
+  count   = "${var.enable * length(var.subdomain) > 0 ? 1 : 0}"
   name    = "${var.subdomain}"
-  comment = "Public hosted zone for ${terraform.workspace} subdomain"
+  comment = "Public hosted zone for ${var.environment} subdomain"
 
-  tags = "${merge(map("Name", "${var.vpc_name}-public-zone"), var.tags, local.default_tags)}"
+  tags {
+    Name        = "${var.vpc_name}-public-zone"
+    environment = "${var.environment}"
+  }
 }
 
 # Internet gateway
@@ -39,117 +39,31 @@ resource "aws_internet_gateway" "igw" {
   count  = "${var.enable}"
   vpc_id = "${aws_vpc.vpc.id}"
 
-  tags = "${merge(map("Name", "${var.vpc_name}-igw"), var.tags, local.default_tags)}"
-}
-
-locals {
-  nat_gateway_count = "${lookup(var.nat_gateway, "behavior") == "one_nat_per_availability_zone" ? "${length(var.availability_zones)}" : 1}"
-}
-
-# Elastic IP for NAT
-resource "aws_eip" "nat" {
-  count = "${var.enable * local.nat_gateway_count}"
-  vpc   = true
-
-  tags = "${merge(map("Name", "${var.vpc_name}-nat-gateway-${count.index}"), var.tags, local.default_tags)}"
+  tags {
+    Name        = "${var.vpc_name}-igw"
+    environment = "${var.environment}"
+  }
 }
 
 # NAT gateway
 resource "aws_nat_gateway" "nat" {
-  count         = "${var.enable * local.nat_gateway_count}"
-  allocation_id = "${element("${aws_eip.nat.*.id}", count.index)}"
-  subnet_id     = "${element(aws_subnet.public.*.id, count.index)}"
+  count         = "${var.enable}"
+  allocation_id = "${aws_eip.nat.id}"
+  subnet_id     = "${element(aws_subnet.public.*.id, var.nat_az_number)}"
 
   depends_on = ["aws_internet_gateway.igw", "aws_eip.nat"]
 
-  tags = "${merge(map("Name", "${var.vpc_name}-nat-gateway-${element(var.availability_zones, count.index)}"), var.tags, local.default_tags)}"
+  #Terraform 10+
+  #    tags {
+  #        Name = "${var.vpc_name}-nat-gateway"
+  #        environment = "${var.environment}"
+  #    }
 }
 
-resource "aws_route_table" "private" {
-  count  = "${var.enable * local.nat_gateway_count}"
-  vpc_id = "${aws_vpc.vpc.id}"
-
-  tags = "${merge(map("Name", "${var.vpc_name}-private-rt-${count.index}", "depends_id", "${var.depends_id}"), var.tags, local.default_tags)}"
-}
-
-resource "aws_route" "private" {
-  count                  = "${var.enable * local.nat_gateway_count}"
-  route_table_id         = "${element(aws_route_table.private.*.id, "${count.index}")}"
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = "${element(aws_nat_gateway.nat.*.id, "${count.index}")}"
-}
-
-# Public routing table
-resource "aws_route_table" "public" {
-  count  = "${var.enable}"
-  vpc_id = "${aws_vpc.vpc.id}"
-
-  tags = "${merge(map("Name", "${var.vpc_name}-public-rt", "depends_id", "${var.depends_id}"), var.tags, local.default_tags)}"
-}
-
-resource "aws_route" "public-igw" {
-  count                  = "${var.enable}"
-  route_table_id         = "${aws_route_table.public.id}"
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = "${aws_internet_gateway.igw.id}"
-}
-
-# Subnets
-resource "aws_subnet" "public" {
-  count                   = "${var.enable * "${lookup(var.public_subnets, "number_of_subnets")}"}"
-  vpc_id                  = "${aws_vpc.vpc.id}"
-  cidr_block              = "${cidrsubnet(var.cidr, "${lookup(var.public_subnets, "newbits")}", "${lookup(var.public_subnets, "netnum_offset")}" + count.index)}"
-  availability_zone       = "${element(var.availability_zones, count.index)}"
-  map_public_ip_on_launch = true
-
-  tags = "${merge(map("Name", "${var.vpc_name}-public-subnet-${element(var.availability_zones, count.index)}", "availability_zone", "${element(var.availability_zones, count.index)}"), var.tags, local.default_tags)}"
-}
-
-resource "aws_subnet" "private" {
-  count                   = "${var.enable * "${lookup(var.private_subnets, "number_of_subnets")}"}"
-  vpc_id                  = "${aws_vpc.vpc.id}"
-  cidr_block              = "${cidrsubnet(var.cidr, "${lookup(var.private_subnets, "newbits")}", "${lookup(var.private_subnets, "netnum_offset")}" + count.index)}"
-  availability_zone       = "${element(var.availability_zones, count.index)}"
-  map_public_ip_on_launch = false
-
-  tags = "${merge(map("Name", "${var.vpc_name}-private-subnet-${element(var.availability_zones, count.index)}", "availability_zone", "${element(var.availability_zones, count.index)}"), var.tags, local.default_tags)}"
-}
-
-resource "aws_route_table_association" "public" {
-  count          = "${var.enable * "${lookup(var.public_subnets, "number_of_subnets")}"}"
-  subnet_id      = "${element(aws_subnet.public.*.id, count.index)}"
-  route_table_id = "${aws_route_table.public.id}"
-}
-
-resource "aws_route_table_association" "private" {
-  count          = "${var.enable * "${lookup(var.private_subnets, "number_of_subnets")}"}"
-  subnet_id      = "${element(aws_subnet.private.*.id, count.index)}"
-  route_table_id = "${element(aws_route_table.private.*.id, count.index)}"
-}
-
-resource "aws_default_security_group" "vpc-default-sg" {
-  count  = "${var.enable}"
-  vpc_id = "${aws_vpc.vpc.id}"
-
-  ingress {
-    protocol  = -1
-    self      = true
-    from_port = 0
-    to_port   = 0
-  }
-
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = "${merge(map("Name", "${var.vpc_name}-default-sg"), var.tags, local.default_tags)}"
-}
-
-resource "null_resource" "dummy_dependency" {
-  depends_on = ["aws_vpc.vpc", "aws_route_table.public", "aws_default_route_table.private"]
+# Elastic IP for NAT
+resource "aws_eip" "nat" {
+  count = "${var.enable}"
+  vpc   = true
 }
 
 resource "aws_default_network_acl" "acl" {
@@ -175,7 +89,10 @@ resource "aws_default_network_acl" "acl" {
     to_port    = 0
   }
 
-  tags = "${merge(map("Name", "${var.vpc_name}-acl"), var.tags, local.default_tags)}"
+  tags {
+    Name        = "${var.vpc_name}-acl"
+    environment = "${var.environment}"
+  }
 }
 
 # By default nothing is exposed to the Internet
@@ -183,5 +100,130 @@ resource "aws_default_route_table" "private" {
   count                  = "${var.enable}"
   default_route_table_id = "${aws_vpc.vpc.default_route_table_id}"
 
-  tags = "${merge(map("Name", "${var.vpc_name}-default-private-rt", "depends_id", "${var.depends_id}"), var.tags, local.default_tags)}"
+  # route = [{"cidr_block" = "0.0.0.0/0", "nat_gateway_id" = "${aws_nat_gateway.nat.id}"}]
+  tags {
+    Name        = "${var.vpc_name}-private-rt"
+    environment = "${var.environment}"
+    depends_id  = "${var.depends_id}"
+  }
+}
+
+resource "aws_route" "private-nat" {
+  count                  = "${var.enable}"
+  route_table_id         = "${aws_default_route_table.private.id}"
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = "${aws_nat_gateway.nat.id}"
+}
+
+# Public routing table
+resource "aws_route_table" "public" {
+  # inline entries and additional atomic entries causes race condition in final routing table
+  count  = "${var.enable}"
+  vpc_id = "${aws_vpc.vpc.id}"
+
+  # An example of list of maps in-lieu of https://www.terraform.io/docs/providers/aws/r/route_table.html
+  #    route = [{"cidr_block" = "0.0.0.0/0", "gateway_id" = "${aws_internet_gateway.igw.id}"}]
+  tags {
+    Name        = "${var.vpc_name}-public-rt"
+    environment = "${var.environment}"
+    depends_id  = "${var.depends_id}"
+  }
+}
+
+resource "aws_route" "public-igw" {
+  count                  = "${var.enable}"
+  route_table_id         = "${aws_route_table.public.id}"
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = "${aws_internet_gateway.igw.id}"
+}
+
+# Subnets
+resource "aws_subnet" "public" {
+  count                   = "${var.enable * var.replication_factor}"
+  vpc_id                  = "${aws_vpc.vpc.id}"
+  cidr_block              = "${cidrsubnet(var.cidr, 8, count.index)}"
+  availability_zone       = "${element(var.azs, count.index)}"
+  map_public_ip_on_launch = true
+
+  tags {
+    Name        = "${var.vpc_name}-public-subnet"
+    environment = "${var.environment}"
+    az          = "${element(var.azs, count.index)}"
+  }
+}
+
+resource "aws_subnet" "private" {
+  count                   = "${var.enable * var.replication_factor}"
+  vpc_id                  = "${aws_vpc.vpc.id}"
+  cidr_block              = "${cidrsubnet(var.cidr, 8, 100+count.index)}"
+  availability_zone       = "${element(var.azs, count.index)}"
+  map_public_ip_on_launch = false
+
+  tags {
+    Name        = "${var.vpc_name}-private-subnet"
+    environment = "${var.environment}"
+    az          = "${element(var.azs, count.index)}"
+  }
+}
+
+resource "aws_route_table_association" "public" {
+  count          = "${var.enable * var.replication_factor}"
+  subnet_id      = "${element(aws_subnet.public.*.id, count.index)}"
+  route_table_id = "${aws_route_table.public.id}"
+}
+
+resource "aws_route_table_association" "private" {
+  count          = "${var.enable * var.replication_factor}"
+  subnet_id      = "${element(aws_subnet.private.*.id, count.index)}"
+  route_table_id = "${aws_default_route_table.private.id}"
+}
+
+# Allow all traffic within the VPC and HTTP, HTTPS, SSH traffic from everywhere
+resource "aws_default_security_group" "vpc-default-sg" {
+  count  = "${var.enable}"
+  vpc_id = "${aws_vpc.vpc.id}"
+
+  ingress {
+    protocol  = -1
+    self      = true
+    from_port = 0
+    to_port   = 0
+  }
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 80
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = 22
+    to_port     = 22
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags {
+    Name        = "${var.vpc_name}-default-sg"
+    environment = "${var.environment}"
+  }
+}
+
+resource "null_resource" "dummy_dependency" {
+  depends_on = ["aws_vpc.vpc", "aws_route_table.public", "aws_default_route_table.private"]
 }
