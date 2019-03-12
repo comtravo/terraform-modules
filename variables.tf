@@ -69,3 +69,9 @@ variable public_subnets {
     netnum_offset     = 100
   }
 }
+
+variable external_elastic_ips {
+  description = "List of elastic IPs to use instead of creating within the module"
+  type        = "list"
+  default     = []
+}

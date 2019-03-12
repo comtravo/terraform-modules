@@ -43,12 +43,19 @@ resource "aws_internet_gateway" "igw" {
 }
 
 locals {
-  nat_gateway_count = "${lookup(var.nat_gateway, "behavior") == "one_nat_per_availability_zone" ? "${length(var.availability_zones)}" : 1}"
+  nat_gateway_desired_count  = "${lookup(var.nat_gateway, "behavior") == "one_nat_per_availability_zone" ? "${length(var.availability_zones)}" : 1}"
+  external_elastic_ips_count = "${length(var.external_elastic_ips)}"
+
+  create_elastic_ips = "${local.external_elastic_ips_count > 0 ? 0 : 1}"
+}
+
+locals {
+  nat_gateway_count = "${length(var.external_elastic_ips) > 0 ? min(length(var.external_elastic_ips), local.nat_gateway_desired_count) : local.nat_gateway_desired_count}"
 }
 
 # Elastic IP for NAT
 resource "aws_eip" "nat" {
-  count = "${var.enable * local.nat_gateway_count}"
+  count = "${var.enable * local.nat_gateway_count * local.create_elastic_ips}"
   vpc   = true
 
   tags = "${merge(map("Name", "${var.vpc_name}-nat-gateway-${count.index}"), var.tags, local.default_tags)}"
@@ -57,7 +64,7 @@ resource "aws_eip" "nat" {
 # NAT gateway
 resource "aws_nat_gateway" "nat" {
   count         = "${var.enable * local.nat_gateway_count}"
-  allocation_id = "${element("${aws_eip.nat.*.id}", count.index)}"
+  allocation_id = "${element(concat("${aws_eip.nat.*.id}", "${var.external_elastic_ips}"), count.index)}"
   subnet_id     = "${element(aws_subnet.public.*.id, count.index)}"
 
   depends_on = ["aws_internet_gateway.igw", "aws_eip.nat"]
