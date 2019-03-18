@@ -12,9 +12,13 @@ resource "aws_vpc" "vpc" {
 }
 
 resource "aws_route53_zone" "net0ps" {
-  count   = "${var.enable}"
-  name    = "${var.vpc_name}-net0ps.com"
-  vpc_id  = "${aws_vpc.vpc.id}"
+  count = "${var.enable}"
+  name  = "${var.vpc_name}-net0ps.com"
+
+  vpc {
+    vpc_id = "${aws_vpc.vpc.id}"
+  }
+
   comment = "Private hosted zone for ${var.environment}"
 
   tags {
@@ -53,11 +57,10 @@ resource "aws_nat_gateway" "nat" {
 
   depends_on = ["aws_internet_gateway.igw", "aws_eip.nat"]
 
-  #Terraform 10+
-  #    tags {
-  #        Name = "${var.vpc_name}-nat-gateway"
-  #        environment = "${var.environment}"
-  #    }
+  tags {
+    Name        = "${var.vpc_name}-nat-gateway"
+    environment = "${var.environment}"
+  }
 }
 
 # Elastic IP for NAT
