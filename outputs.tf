@@ -18,8 +18,24 @@ output "net0ps_zone_id" {
   value = "${aws_route53_zone.net0ps.zone_id}"
 }
 
+output "private_zone_id" {
+  value = "${aws_route53_zone.net0ps.zone_id}"
+}
+
 output "subdomain_zone_id" {
   value = "${aws_route53_zone.subdomain.zone_id}"
+}
+
+output "public_subdomain_zone_id" {
+  value = "${aws_route53_zone.subdomain.zone_id}"
+}
+
+output "public_subdomain" {
+  value = "${var.subdomain}"
+}
+
+output "private_subdomain" {
+  value = "${aws_route53_zone.net0ps.name}"
 }
 
 output "vpc_private_routing_table_id" {

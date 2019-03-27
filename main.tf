@@ -98,12 +98,10 @@ resource "aws_default_network_acl" "acl" {
   }
 }
 
-# By default nothing is exposed to the Internet
 resource "aws_default_route_table" "private" {
   count                  = "${var.enable}"
   default_route_table_id = "${aws_vpc.vpc.default_route_table_id}"
 
-  # route = [{"cidr_block" = "0.0.0.0/0", "nat_gateway_id" = "${aws_nat_gateway.nat.id}"}]
   tags {
     Name        = "${var.vpc_name}-private-rt"
     environment = "${var.environment}"
@@ -124,8 +122,6 @@ resource "aws_route_table" "public" {
   count  = "${var.enable}"
   vpc_id = "${aws_vpc.vpc.id}"
 
-  # An example of list of maps in-lieu of https://www.terraform.io/docs/providers/aws/r/route_table.html
-  #    route = [{"cidr_block" = "0.0.0.0/0", "gateway_id" = "${aws_internet_gateway.igw.id}"}]
   tags {
     Name        = "${var.vpc_name}-public-rt"
     environment = "${var.environment}"
@@ -181,7 +177,7 @@ resource "aws_route_table_association" "private" {
   route_table_id = "${aws_default_route_table.private.id}"
 }
 
-# Allow all traffic within the VPC and HTTP, HTTPS, SSH traffic from everywhere
+# Allow all traffic within the VPC
 resource "aws_default_security_group" "vpc-default-sg" {
   count  = "${var.enable}"
   vpc_id = "${aws_vpc.vpc.id}"
@@ -191,27 +187,6 @@ resource "aws_default_security_group" "vpc-default-sg" {
     self      = true
     from_port = 0
     to_port   = 0
-  }
-
-  ingress {
-    protocol    = "tcp"
-    from_port   = 443
-    to_port     = 443
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    protocol    = "tcp"
-    from_port   = 80
-    to_port     = 80
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    protocol    = "tcp"
-    from_port   = 22
-    to_port     = 22
-    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
