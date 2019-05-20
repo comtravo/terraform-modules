@@ -45,9 +45,9 @@ variable environment {
 
 variable timeouts {
   default {
-    create = 10
-    delete = 10
-    update = 10
+    create = "10m"
+    delete = "10m"
+    update = "10m"
   }
 }
 
