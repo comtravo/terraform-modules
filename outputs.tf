@@ -1,21 +1,21 @@
 output id {
   description = "AWS ALB id"
-  value       = "${aws_alb.alb.id}"
+  value       = "${element(concat(aws_alb.alb.*.id, list("")), 0)}"
 }
 
 output zone_id {
   description = "AWS ALB zone id"
-  value       = "${aws_alb.alb.zone_id}"
+  value       = "${element(concat(aws_alb.alb.*.zone_id, list("")), 0)}"
 }
 
 output arn {
   description = "AWS ALB ARN"
-  value       = "${aws_alb.alb.arn}"
+  value       = "${element(concat(aws_alb.alb.*.arn, list("")), 0)}"
 }
 
 output dns_name {
   description = "AWS ALB DNS name"
-  value       = "${aws_alb.alb.dns_name}"
+  value       = "${element(concat(aws_alb.alb.*.dns_name, list("")), 0)}"
 }
 
 # awesome stuff
@@ -30,10 +30,10 @@ output listener_arns {
 
 output default_target_group_http {
   description = "default HTTP target group arn"
-  value       = "${aws_alb_target_group.dummy_http.arn}"
+  value       = "${element(concat(aws_alb_target_group.dummy_http.*.arn, list("")), 0)}"
 }
 
 output default_target_group_https {
   description = "default HTTPS target group arn"
-  value       = "${aws_alb_target_group.dummy_https.arn}"
+  value       = "${element(concat(aws_alb_target_group.dummy_https.*.arn, list("")), 0)}"
 }
