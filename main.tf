@@ -19,7 +19,8 @@ variable region {
 }
 
 variable destination {
-  default = "s3"
+  default     = "s3"
+  description = "Kinesis Firehose Destination"
 }
 
 variable s3_configuration {
@@ -127,4 +128,9 @@ resource "aws_kinesis_firehose_delivery_stream" "stream" {
       log_stream_name = "S3Delivery"
     }
   }
+}
+
+output "arn" {
+  value       = "${aws_kinesis_firehose_delivery_stream.stream.arn}"
+  description = "ARN of the Kinesis Firehose"
 }
