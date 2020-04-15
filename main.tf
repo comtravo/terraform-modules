@@ -131,6 +131,6 @@ resource "aws_kinesis_firehose_delivery_stream" "stream" {
 }
 
 output "arn" {
-  value       = "${aws_kinesis_firehose_delivery_stream.stream.arn}"
+  value       = "${element(concat(aws_kinesis_firehose_delivery_stream.stream.*.arn, list("")), 0)}"
   description = "ARN of the Kinesis Firehose"
 }
