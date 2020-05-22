@@ -56,7 +56,7 @@ module "website-alb" {
 | idle\_timeout | Idle timeout | `number` | `60` | no |
 | internal | Bool flag to indicate whether the ALB is internal or external | `bool` | `true` | no |
 | ip\_address\_type | Address type for the ALB. Can be ipv4 or dual | `string` | `"ipv4"` | no |
-| timeouts | n/a | <pre>object({<br>    create = string,<br>    delete = string,<br>    update = string<br>  })</pre> | <pre>{<br>  "create": "10m",<br>  "delete": "10m",<br>  "update": "10m"<br>}</pre> | no |
+| timeouts | ALB creation timeouts | <pre>object({<br>    create = string,<br>    delete = string,<br>    update = string<br>  })</pre> | <pre>{<br>  "create": "10m",<br>  "delete": "10m",<br>  "update": "10m"<br>}</pre> | no |
 
 ## Outputs
 

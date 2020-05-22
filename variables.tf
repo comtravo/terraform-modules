@@ -52,6 +52,7 @@ variable "environment" {
 }
 
 variable "timeouts" {
+  description = "ALB creation timeouts"
   type = object({
     create = string,
     delete = string,
