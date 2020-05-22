@@ -5,7 +5,7 @@
  *
  * ```hcl
  * module "website-alb" {
- *   source = "../../../../terraform-aws-alb/"
+ *   source = "github.com/comtravo/terraform-aws-alb?ref=3.0.0"
  *
  *   environment        = terraform.workspace
  *   name               = "website"
