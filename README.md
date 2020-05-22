@@ -4,7 +4,7 @@
 
 ```hcl
 module "website-alb" {
-  source = "../../../../terraform-aws-alb/"
+  source = "github.com/comtravo/terraform-aws-alb?ref=3.0.0"
 
   environment        = terraform.workspace
   name               = "website"
@@ -66,7 +66,8 @@ module "website-alb" {
 | default\_target\_group\_http | default HTTP target group arn |
 | default\_target\_group\_https | default HTTPS target group arn |
 | dns\_name | AWS ALB DNS name |
+| http\_listner\_arn | AWS ALB HTTP listner arn |
+| https\_listner\_arn | AWS ALB HTTP listner arn |
 | id | AWS ALB id |
-| listener\_arns | AWS ALB listner ARNs |
 | zone\_id | AWS ALB zone id |
 
