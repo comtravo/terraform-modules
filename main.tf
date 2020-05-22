@@ -3,29 +3,29 @@
  *
  * ## Usage:
  *
- *```hcl
- *module "website-alb" {
- *  source = "../../../../terraform-aws-alb/"
+ * ```hcl
+ * module "website-alb" {
+ *   source = "../../../../terraform-aws-alb/"
  *
- *  environment        = terraform.workspace
- *  name               = "website"
- *  internal           = false
- *  vpc_id             = module.main_vpc.vpc_id
- *  security_group_ids = [aws_security_group.website-alb.id]
- *  subnet_ids         = module.main_vpc.public_subnets
- *  idle_timeout       = 120
+ *   environment        = terraform.workspace
+ *   name               = "website"
+ *   internal           = false
+ *   vpc_id             = module.main_vpc.vpc_id
+ *   security_group_ids = [aws_security_group.website-alb.id]
+ *   subnet_ids         = module.main_vpc.public_subnets
+ *   idle_timeout       = 120
  *
- *  http_listener_port = 80
+ *   http_listener_port = 80
  *
- *  https_listener_config = {
- *    port         = 443
- *    certificates = [
- *      data.aws_acm_certificate.comtravoDotCom.arn,
- *      data.aws_acm_certificate.webDotComtravoDotCom.arn,
- *      data.aws_acm_certificate.comtravoDotDe.arn
- *    ]
- *  }
- *}
+ *   https_listener_config = {
+ *     port         = 443
+ *     certificates = [
+ *       data.aws_acm_certificate.comtravoDotCom.arn,
+ *       data.aws_acm_certificate.webDotComtravoDotCom.arn,
+ *       data.aws_acm_certificate.comtravoDotDe.arn
+ *     ]
+ *   }
+ * }
  *```
  *
  */
