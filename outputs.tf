@@ -29,12 +29,12 @@ output "https_listner_arn" {
 }
 
 output "default_target_group_http" {
-  description = "default HTTP target group arn"
+  description = "Default HTTP target group arn"
   value       = var.enable ? var.enable ? aws_alb_target_group.dummy_http[0].arn : "" : ""
 }
 
 output "default_target_group_https" {
-  description = "default HTTPS target group arn"
+  description = "Default HTTPS target group arn"
   value       = var.enable ? aws_alb_target_group.dummy_https[0].arn : ""
 }
 

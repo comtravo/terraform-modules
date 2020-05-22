@@ -63,8 +63,8 @@ module "website-alb" {
 | Name | Description |
 |------|-------------|
 | arn | AWS ALB ARN |
-| default\_target\_group\_http | default HTTP target group arn |
-| default\_target\_group\_https | default HTTPS target group arn |
+| default\_target\_group\_http | Default HTTP target group arn |
+| default\_target\_group\_https | Default HTTPS target group arn |
 | dns\_name | AWS ALB DNS name |
 | http\_listner\_arn | AWS ALB HTTP listner arn |
 | https\_listner\_arn | AWS ALB HTTP listner arn |
