@@ -1,41 +1,73 @@
-# Terraform AWS module for AWS ALB
+# Comtravo's Terraform AWS ALB module
 
-## Introduction
-This module create an ALB and all the resources related to it.
-
-## Usage
+## Usage:
 
 ```hcl
-module "my-company-external-alb" {
-  source = "github.com/comtravo/terraform-aws-alb"
+module "website-alb" {
+  source = "github.com/comtravo/terraform-aws-alb?ref=3.0.0"
 
-  environment        = "${terraform.workspace}"
-  name               = "my-company-external-${var.ct_environment_name}"
+  environment        = terraform.workspace
+  name               = "website"
   internal           = false
-  vpc_id             = "${module.main_vpc.vpc_id}"
-  security_group_ids = ["${aws_security_group.my-company-external-alb.id}"]
-  subnet_ids         = "${module.main_vpc.public_subnets}"
+  vpc_id             = module.main_vpc.vpc_id
+  security_group_ids = [aws_security_group.website-alb.id]
+  subnet_ids         = module.main_vpc.public_subnets
+  idle_timeout       = 120
 
-  http_listeners = ["80"]
+  http_listener_port = 80
 
-  https_listeners = {
-    port        = 443
-    certificates = "${join(",", list(data.aws_acm_certificate.wildcardDotSubdomainDotComtravoDotCom.arn, data.aws_acm_certificate.wildcardDotComtravoDotCom.arn))}"
+  https_listener_config = {
+    port         = 443
+    certificates = [
+      data.aws_acm_certificate.comtravoDotCom.arn,
+      data.aws_acm_certificate.webDotComtravoDotCom.arn,
+      data.aws_acm_certificate.comtravoDotDe.arn
+    ]
   }
 }
 ```
 
-## TODO
-- [ ] Support multiple HTTPS listeners
-- [ ] Create subnet per ALB so that AWS has no problems to scale the ALB
-- [ ] Proper Versioning pipeline
+## Requirements
 
+| Name | Version |
+|------|---------|
+| terraform | >= 0.12 |
+| aws | ~> 2.0 |
 
-## Authors
+## Providers
 
-Module managed by [Comtravo](https://github.com/comtravo).
+| Name | Version |
+|------|---------|
+| aws | ~> 2.0 |
 
-License
--------
+## Inputs
 
-MIT Licensed. See LICENSE for full details.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| environment | The environment of the ALB. Used for tagging | `string` | n/a | yes |
+| https\_listener\_config | List of maps of HTTPS listenr objects | <pre>object({<br>    port         = string,<br>    certificates = list(string)<br>  })</pre> | n/a | yes |
+| name | AWS ALB name | `string` | n/a | yes |
+| security\_group\_ids | List of security groups to be associated with the ALB | `list(string)` | n/a | yes |
+| subnet\_ids | List of subnets IDs where the ALB would be serving | `list(string)` | n/a | yes |
+| vpc\_id | VPC ID where the ALB needs to be provisioned | `string` | n/a | yes |
+| enable | Enable or Disable module | `bool` | `true` | no |
+| health\_check | Healthcheck for default target groups | `map(string)` | `{}` | no |
+| http\_listener\_port | HTTP listener port | `number` | `80` | no |
+| idle\_timeout | Idle timeout | `number` | `60` | no |
+| internal | Bool flag to indicate whether the ALB is internal or external | `bool` | `true` | no |
+| ip\_address\_type | Address type for the ALB. Can be ipv4 or dual | `string` | `"ipv4"` | no |
+| timeouts | ALB creation timeouts | <pre>object({<br>    create = string,<br>    delete = string,<br>    update = string<br>  })</pre> | <pre>{<br>  "create": "10m",<br>  "delete": "10m",<br>  "update": "10m"<br>}</pre> | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| arn | AWS ALB ARN |
+| default\_target\_group\_http | Default HTTP target group arn |
+| default\_target\_group\_https | Default HTTPS target group arn |
+| dns\_name | AWS ALB DNS name |
+| http\_listner\_arn | AWS ALB HTTP listner arn |
+| https\_listner\_arn | AWS ALB HTTP listner arn |
+| id | AWS ALB id |
+| zone\_id | AWS ALB zone id |
+
