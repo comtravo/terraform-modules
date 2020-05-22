@@ -1,3 +1,35 @@
+/**
+ * # Comtravo's Terraform AWS ALB module
+ *
+ * ## Usage:
+ *
+ *```hcl
+ *module "website-alb" {
+ *  source = "../../../../terraform-aws-alb/"
+ *
+ *  environment        = terraform.workspace
+ *  name               = "website"
+ *  internal           = false
+ *  vpc_id             = module.main_vpc.vpc_id
+ *  security_group_ids = [aws_security_group.website-alb.id]
+ *  subnet_ids         = module.main_vpc.public_subnets
+ *  idle_timeout       = 120
+ *
+ *  http_listener_port = 80
+ *
+ *  https_listener_config = {
+ *    port         = 443
+ *    certificates = [
+ *      data.aws_acm_certificate.comtravoDotCom.arn,
+ *      data.aws_acm_certificate.webDotComtravoDotCom.arn,
+ *      data.aws_acm_certificate.comtravoDotDe.arn
+ *    ]
+ *  }
+ *}
+ *```
+ *
+ */
+
 locals {
   enable_https = can(var.https_listener_config.port) && var.enable ? true : false
 }
@@ -32,7 +64,11 @@ resource "aws_alb" "alb" {
     Name        = var.name
   }
 
-  # timeouts = var.timeouts
+  timeouts {
+    create = lookup(var.timeouts, "create", null)
+    delete = lookup(var.timeouts, "delete", null)
+    update = lookup(var.timeouts, "update", null)
+  }
 }
 
 resource "aws_alb_target_group" "dummy_https" {
