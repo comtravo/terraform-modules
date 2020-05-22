@@ -25,7 +25,6 @@ module "website-alb" {
     ]
   }
 }
-*
 ```
 
 ## Requirements
