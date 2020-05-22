@@ -1,22 +1,23 @@
 variable "name" {
   description = "AWS ALB name"
+  type        = string
 }
 
 variable "enable" {
-  description = "int flag to enable or disable this module. Should be 0 or 1 for this module to work properly"
-  default     = 1
+  description = "Enable or Disable module"
+  default     = true
+  type        = bool
 }
 
 variable "vpc_id" {
   description = "VPC ID where the ALB needs to be provisioned"
+  type        = string
 }
 
 variable "internal" {
   description = "Bool flag to indicate whether the ALB is internal or external"
-}
-
-variable "load_balancer_type" {
-  default = "application"
+  type        = bool
+  default     = true
 }
 
 variable "security_group_ids" {
@@ -63,16 +64,18 @@ variable "timeouts" {
 # Terraform list of maps
 # https://github.com/hashicorp/terraform/issues/12294
 
-variable "https_listeners" {
+variable "https_listener_config" {
   description = "List of maps of HTTPS listenr objects"
-  type        = map(string)
-  default     = {}
+  type = object({
+    port         = string,
+    certificates = string
+  })
 }
 
-variable "http_listeners" {
-  description = "List of maps of HTTPS listenr objects"
-  type        = list(string)
-  default     = []
+variable "http_listener_port" {
+  description = " HTTP listener port"
+  type        = number
+  default     = 80
 }
 
 variable "health_check" {
