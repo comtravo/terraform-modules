@@ -68,7 +68,7 @@ variable "https_listener_config" {
   description = "List of maps of HTTPS listenr objects"
   type = object({
     port         = string,
-    certificates = string
+    certificates = list(string)
   })
 }
 
