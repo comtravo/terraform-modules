@@ -4,7 +4,7 @@
 
 \*```hcl
 *module "website-alb" {
- source = "github.com/comtravo/terraform-aws-alb?ref=terraform-0.12-upgrade"
+ source = "../../../../terraform-aws-alb/"
 
  environment        = terraform.workspace
  name               = "website"
