@@ -9,6 +9,10 @@ variable "enable" {
   type        = bool
 }
 
+locals {
+  enable_count = var.enable ? 1 : 0
+}
+
 variable "vpc_id" {
   description = "VPC ID where the ALB needs to be provisioned"
   type        = string

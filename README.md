@@ -15,7 +15,7 @@
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | environment | The environment of the ALB. Used for tagging | `string` | n/a | yes |
-| https\_listener\_config | List of maps of HTTPS listenr objects | <pre>object({<br>    port         = string,<br>    certificates = string<br>  })</pre> | n/a | yes |
+| https\_listener\_config | List of maps of HTTPS listenr objects | <pre>object({<br>    port         = string,<br>    certificates = list(string)<br>  })</pre> | n/a | yes |
 | name | AWS ALB name | `string` | n/a | yes |
 | security\_group\_ids | List of security groups to be associated with the ALB | `list(string)` | n/a | yes |
 | subnet\_ids | List of subnets IDs where the ALB would be serving | `list(string)` | n/a | yes |

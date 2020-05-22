@@ -1,20 +1,24 @@
 locals {
-  enable_https = var.https_listener_config && var.enable ? true : false
-  enable_http  = var.enable
+  enable_https = can(var.https_listener_config.port) && var.enable ? true : false
+}
+
+locals {
+  enable_http_count  = local.enable_count
+  enable_https_count = local.enable_https ? 1 : 0
 }
 
 locals {
   certificate_length = local.enable_https ? length(lookup(var.https_listener_config, "certificates")) : 0
-  certificates       = local.enable_https ? lookup(var.https_listener_config, "certificates") : 0
+  certificates       = local.enable_https ? lookup(var.https_listener_config, "certificates") : null
 }
 
 locals {
   default_cert                  = local.enable_https ? element(local.certificates, 0) : ""
-  additional_certificate_length = var.enable_https ? local.certificate_length - 1 : 0
+  additional_certificate_length = local.enable_https ? local.certificate_length - 1 : 0
 }
 
 resource "aws_alb" "alb" {
-  count                      = var.enable
+  count                      = local.enable_count
   name                       = var.name
   internal                   = var.internal
   security_groups            = var.security_group_ids
@@ -28,11 +32,11 @@ resource "aws_alb" "alb" {
     Name        = var.name
   }
 
-  timeouts = var.timeouts
+  # timeouts = var.timeouts
 }
 
 resource "aws_alb_target_group" "dummy_https" {
-  count = local.enable_https
+  count = local.enable_https_count
 
   name                 = "d-${var.name}-${var.https_listener_config["port"]}"
   port                 = 80
@@ -57,7 +61,7 @@ resource "aws_alb_target_group" "dummy_https" {
 }
 
 resource "aws_alb_listener" "listener_https" {
-  count = local.enable_https
+  count = local.enable_https_count
 
   load_balancer_arn = aws_alb.alb[0].arn
   port              = var.https_listener_config["port"]
@@ -81,9 +85,9 @@ resource "aws_alb_listener_certificate" "additional_certificates" {
 }
 
 resource "aws_alb_target_group" "dummy_http" {
-  count = local.enable_http
+  count = local.enable_http_count
 
-  name                 = "d-${var.name}-${var.http_listeners[count.index]}"
+  name                 = "d-${var.name}-${var.http_listener_port}"
   port                 = 80
   protocol             = "HTTP"
   vpc_id               = var.vpc_id
@@ -106,10 +110,10 @@ resource "aws_alb_target_group" "dummy_http" {
 }
 
 resource "aws_alb_listener" "listener_http" {
-  count = local.enable_http
+  count = local.enable_http_count
 
   load_balancer_arn = aws_alb.alb[0].arn
-  port              = element(var.http_listeners, count.index)
+  port              = var.http_listener_port
   protocol          = "HTTP"
 
   default_action {

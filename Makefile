@@ -11,3 +11,5 @@ lint:
 
 generate-docs:
 	@$(GENERATE_DOCS_COMMAND)
+
+all: lint generate-docs
