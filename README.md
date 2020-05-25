@@ -1,5 +1,19 @@
-# Comtravo's legacy Terraform AWS VPC module
-# Do not use this legacy module
+# Terraform AWS module for creating VPC resources
+
+## Introduction
+
+This module creates a AWS VPC and all the resources related to it to log to VPC.
+
+## Usage  
+Checkout [example.tf](./examples/example.tf) for how to use this module
+
+## Authors
+
+Module managed by [Comtravo](https://github.com/comtravo).
+
+## License
+
+MIT Licensed. See [LICENSE](LICENSE) for full details.
 
 ## Requirements
 

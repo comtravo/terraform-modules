@@ -1,16 +1,28 @@
 /**
- * # Comtravo's legacy Terraform AWS VPC module
- * # Do not use this legacy module
- *
- */
-
-
+* # Terraform AWS module for creating VPC resources
+*
+* ## Introduction
+*
+* This module creates a AWS VPC and all the resources related to it to log to VPC.
+*
+* ## Usage
+* Checkout [example.tf](./examples/example.tf) for how to use this module
+*
+* ## Authors
+*
+* Module managed by [Comtravo](https://github.com/comtravo).
+*
+* ## License
+*
+* MIT Licensed. See [LICENSE](LICENSE) for full details.
+*/
 
 resource "aws_vpc" "vpc" {
-  count                = local.enable_count
-  cidr_block           = var.cidr
-  enable_dns_support   = var.enable_dns_support
-  enable_dns_hostnames = var.enable_dns_hostnames
+  count                            = local.enable_count
+  cidr_block                       = var.cidr
+  enable_dns_support               = var.enable_dns_support
+  enable_dns_hostnames             = var.enable_dns_hostnames
+  assign_generated_ipv6_cidr_block = false
 
   tags = {
     Name        = "${var.vpc_name}-vpc"
@@ -214,6 +226,7 @@ resource "aws_default_security_group" "vpc-default-sg" {
 }
 
 resource "null_resource" "dummy_dependency" {
+  count = local.enable_count
   depends_on = [
     aws_vpc.vpc,
     aws_route_table.public,
