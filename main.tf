@@ -3,14 +3,13 @@
 *
 * ## Introduction
 *
-* This module creates a AWS VPC and all the resources related to it.
 * This module is used to create VPCs in your AWS account. It is a complete rewrite of our internal Terraform AWS VPC module. see branch (1.x).
 *
-* **Note on Terraforming elastic IPs outside of the module. The elastic IPs should be Terraformed before specifying the vpc module. So Terraform should be applied in two phases. one for EIPs and then the VPC module.**
+* _Note on Terraforming elastic IPs outside of the module. The elastic IPs should be Terraformed before specifying the vpc module. So Terraform should be applied in two phases. one for EIPs and then the VPC module._
 *
 *
 * ## Usage
-* Checkout [example.tf](./examples/example.tf) for how to use this module
+* Checkout [example.tf](./examples/example.tf) and [test cases](./test) for how to use this module
 *
 * ## Authors
 *
