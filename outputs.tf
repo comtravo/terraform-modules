@@ -1,17 +1,17 @@
 locals {
   outputs = {
-    public_subnets               = var.enable ? aws_subnet.public.*.id : []
-    private_subnets              = var.enable ? aws_subnet.private.*.id : []
-    vpc_id                       = var.enable ? aws_vpc.vpc[0].id : ""
-    vpc_default_sg               = var.enable ? aws_default_security_group.vpc-default-sg[0].id : ""
-    net0ps_zone_id               = var.enable ? aws_route53_zone.net0ps[0].zone_id : ""
-    subdomain_zone_id            = var.enable && var.subdomain != "" ? aws_route53_zone.subdomain[0].zone_id : ""
-    vpc_private_routing_table_id = var.enable ? aws_route_table.private[0].id : ""
-    vpc_public_routing_table_id  = var.enable ? aws_route_table.public[0].id : ""
-    private_subdomain            = var.enable ? aws_route53_zone.net0ps[0].name : ""
-    depends_id                   = var.enable ? null_resource.dummy_dependency[0].id : ""
-    nat_gateway_ids              = var.enable ? aws_nat_gateway.nat.*.id : []
-    elastic_ips                  = var.enable && length(var.external_elastic_ips) > 0 ? var.external_elastic_ips : var.enable ? aws_eip.nat.*.id : []
+    public_subnets                = var.enable ? aws_subnet.public.*.id : []
+    private_subnets               = var.enable ? aws_subnet.private.*.id : []
+    vpc_id                        = var.enable ? aws_vpc.vpc[0].id : ""
+    vpc_default_sg                = var.enable ? aws_default_security_group.vpc-default-sg[0].id : ""
+    net0ps_zone_id                = var.enable ? aws_route53_zone.net0ps[0].zone_id : ""
+    subdomain_zone_id             = var.enable && var.subdomain != "" ? aws_route53_zone.subdomain[0].zone_id : ""
+    vpc_private_routing_table_ids = var.enable ? aws_route_table.private.*.id : []
+    vpc_public_routing_table_id   = var.enable ? aws_route_table.public[0].id : ""
+    private_subdomain             = var.enable ? aws_route53_zone.net0ps[0].name : ""
+    depends_id                    = var.enable ? null_resource.dummy_dependency[0].id : ""
+    nat_gateway_ids               = var.enable ? aws_nat_gateway.nat.*.id : []
+    elastic_ips                   = var.enable && length(var.external_elastic_ips) > 0 ? var.external_elastic_ips : var.enable ? aws_eip.nat.*.id : []
   }
 }
 
@@ -75,8 +75,8 @@ output "nat_gateway_ids" {
   description = "NAT gateway ids"
 }
 
-output "vpc_private_routing_table_id" {
-  value       = local.outputs.vpc_private_routing_table_id
+output "vpc_private_routing_table_ids" {
+  value       = local.outputs.vpc_private_routing_table_ids
   description = "Private routing table id"
 }
 

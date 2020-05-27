@@ -52,6 +52,7 @@ func TestVPCApplyEnabled_basic(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 	ValidateTerraformModuleOutputs(t, terraformOptions)
 	ValidateNATGateways(t, terraformOptions, 1)
+	ValidatePrivateRoutingTables(t, terraformOptions, 1)
 	ValidateElasticIps(t, terraformOptions, 1)
 }
 
@@ -93,6 +94,7 @@ func TestVPCApplyEnabled_twoAvailabilityZones(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 	ValidateTerraformModuleOutputs(t, terraformOptions)
 	ValidateNATGateways(t, terraformOptions, 1)
+	ValidatePrivateRoutingTables(t, terraformOptions, 1)
 	ValidateElasticIps(t, terraformOptions, 1)
 }
 
@@ -135,6 +137,7 @@ func TestVPCApplyEnabled_differentSubnetConfigurations(t *testing.T) {
 
 	ValidateTerraformModuleOutputs(t, terraformOptions)
 	ValidateNATGateways(t, terraformOptions, 1)
+	ValidatePrivateRoutingTables(t, terraformOptions, 1)
 	ValidateElasticIps(t, terraformOptions, 1)
 }
 
@@ -177,6 +180,7 @@ func TestVPCApplyEnabled_noPublicSubdomain(t *testing.T) {
 
 	ValidateTerraformModuleOutputs(t, terraformOptions)
 	ValidateNATGateways(t, terraformOptions, 1)
+	ValidatePrivateRoutingTables(t, terraformOptions, 1)
 	ValidateElasticIps(t, terraformOptions, 1)
 }
 
@@ -219,6 +223,7 @@ func TestVPCApplyEnabled_natPerAZ(t *testing.T) {
 
 	ValidateTerraformModuleOutputs(t, terraformOptions)
 	ValidateNATGateways(t, terraformOptions, 3)
+	ValidatePrivateRoutingTables(t, terraformOptions, 3)
 	ValidateElasticIps(t, terraformOptions, 3)
 }
 
@@ -261,6 +266,7 @@ func TestVPCApplyEnabled_natPerAZInTwoAZ(t *testing.T) {
 
 	ValidateTerraformModuleOutputs(t, terraformOptions)
 	ValidateNATGateways(t, terraformOptions, 2)
+	ValidatePrivateRoutingTables(t, terraformOptions, 2)
 	ValidateElasticIps(t, terraformOptions, 2)
 }
 
@@ -307,6 +313,7 @@ func TestVPCApplyEnabled_externalElasticIPsNatPerAZ(t *testing.T) {
 
 	ValidateTerraformModuleOutputs(t, terraformOptions)
 	ValidateNATGateways(t, terraformOptions, 3)
+	ValidatePrivateRoutingTables(t, terraformOptions, 3)
 	ValidateElasticIps(t, terraformOptions, 5)
 	ValidateExternalElasticIPs(t, terraformOptions)
 }
@@ -354,6 +361,7 @@ func TestVPCApplyEnabled_externalElasticIPsLessThanDesiredNATCount(t *testing.T)
 
 	ValidateTerraformModuleOutputs(t, terraformOptions)
 	ValidateNATGateways(t, terraformOptions, 1)
+	ValidatePrivateRoutingTables(t, terraformOptions, 1)
 	ValidateElasticIps(t, terraformOptions, 1)
 	ValidateExternalElasticIPs(t, terraformOptions)
 }
@@ -401,6 +409,7 @@ func TestVPCApplyEnabled_externalElasticIPsSingleNAT(t *testing.T) {
 
 	ValidateTerraformModuleOutputs(t, terraformOptions)
 	ValidateNATGateways(t, terraformOptions, 1)
+	ValidatePrivateRoutingTables(t, terraformOptions, 1)
 	ValidateElasticIps(t, terraformOptions, 5)
 	ValidateExternalElasticIPs(t, terraformOptions)
 }
@@ -503,17 +512,26 @@ func ValidateTerraformModuleOutputs(t *testing.T, terraformOptions *terraform.Op
 
 func ValidateNATGateways(t *testing.T, terraformOptions *terraform.Options, expectedNumberOfResources int) {
 	nat_gateway_ids := terraform.OutputList(t, terraformOptions, "nat_gateway_ids")
-	require.Len(t, nat_gateway_ids, expectedNumberOfResources)
+	ValidateCount(t, nat_gateway_ids, expectedNumberOfResources)
 	ValidateEachElementInArray(t, nat_gateway_ids, "nat-*")
 }
 
 func ValidateElasticIps(t *testing.T, terraformOptions *terraform.Options, expectedNumberOfResources int) {
 	elastic_ips := terraform.OutputList(t, terraformOptions, "elastic_ips")
-	require.Len(t, elastic_ips, expectedNumberOfResources)
+	ValidateCount(t, elastic_ips, expectedNumberOfResources)
 	ValidateEachElementInArray(t, elastic_ips, "eip-*")
 }
 
+func ValidatePrivateRoutingTables(t *testing.T, terraformOptions *terraform.Options, expectedNumberOfResources int) {
+	vpc_private_routing_table_ids := terraform.OutputList(t, terraformOptions, "vpc_private_routing_table_ids")
+	ValidateCount(t, vpc_private_routing_table_ids, expectedNumberOfResources)
+	ValidateEachElementInArray(t, vpc_private_routing_table_ids, "rtb-*")
+}
+
 func ValidateEachElementInArray(t *testing.T, array []string, regularExpression string) {
+
+	require.Greater(t, len(array), 0)
+
 	for _, element := range array {
 		require.Regexp(t, regularExpression, element)
 	}
@@ -573,12 +591,15 @@ func ValidateVPCRoute53ZoneName(t *testing.T, terraformOptions *terraform.Option
 }
 
 func ValidateVPCRoutingTables(t *testing.T, terraformOptions *terraform.Options) {
-	vpc_private_routing_table_id := terraform.Output(t, terraformOptions, "vpc_private_routing_table_id")
+	vpc_private_routing_table_ids := terraform.OutputList(t, terraformOptions, "vpc_private_routing_table_ids")
 	vpc_public_routing_table_id := terraform.Output(t, terraformOptions, "vpc_public_routing_table_id")
 
-	require.Regexp(t, "rtb-*", vpc_private_routing_table_id)
+	ValidateEachElementInArray(t, vpc_private_routing_table_ids, "rtb-*")
 	require.Regexp(t, "rtb-*", vpc_public_routing_table_id)
-	require.NotEqual(t, vpc_private_routing_table_id, vpc_public_routing_table_id)
+}
+
+func ValidateCount(t *testing.T, array []string, expectedCount int) {
+	require.Len(t, array, expectedCount)
 }
 
 func ValidateDependId(t *testing.T, terraformOptions *terraform.Options) {

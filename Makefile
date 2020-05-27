@@ -31,7 +31,7 @@ develop:
 	@$(DOCKER_COMPOSE_DEVELOP) down -v
 
 generate-docs: fmt lint
-	@terraform-docs --no-escape markdown . > README.md
+	@$(shell terraform-docs markdown --no-escape . > README.md)
 
 clean-state:
 	@find . -type f -name 'terraform.tfstate' | xargs rm -rf
