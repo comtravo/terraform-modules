@@ -66,15 +66,13 @@ variable "timeouts" {
   }
 }
 
-# Terraform list of maps
-# https://github.com/hashicorp/terraform/issues/12294
-
 variable "https_listener_config" {
   description = "List of maps of HTTPS listenr objects"
   type = object({
     port         = string,
     certificates = list(string)
   })
+  default = null
 }
 
 variable "http_listener_port" {
