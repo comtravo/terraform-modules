@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  terraform:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ct-terraform-aws-firehose-module:${GIT_COMMIT:-latest}
+    environment:
+      - AWS_REGION=us-east-1
+      - AWS_DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=foo
+      - AWS_SECRET_ACCESS_KEY=bar
+      - LOCALSTACK_HOST=localstack
+    depends_on:
+      - localstack
+
+  localstack:
+    image: localstack/localstack
+    environment:
+      - SERVICES=s3,firehose,iam,sts
+      - DEFAULT_REGION=us-east-1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DATA_DIR=/tmp/localstack/data
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "localstack-data:/tmp/localstack"
+
+volumes:
+  localstack-data:

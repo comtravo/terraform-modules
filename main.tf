@@ -1,38 +1,66 @@
+/**
+* # Terraform AWS module for AWS Kinesis Firehose
+*
+* ## Introduction
+*
+* This module creates a Kinesis Firehose and all the resources related to it to log to S3.
+*
+* ## Usage
+* Checkout [test.tf](./tests/test.tf) for how to use this module
+*
+* ## Authors
+*
+* Module managed by [Comtravo](https://github.com/comtravo).
+*
+* ## License
+*
+* MIT Licensed. See [LICENSE](LICENSE) for full details.
+*/
+
 ###############################################################################
 #                                    VARIABLES                                #
 ###############################################################################
 
-variable name {
-  type        = "string"
+variable "name" {
+  type        = string
   description = "Name of the firehose"
 }
 
-variable account_id {
-  type        = "string"
+variable "account_id" {
+  type        = string
   description = "AWS account ID"
 }
 
-variable region {
+variable "region" {
   default     = "eu-west-1"
-  type        = "string"
+  type        = string
   description = "AWS region"
 }
 
-variable destination {
+variable "destination" {
   default     = "s3"
+  type        = string
   description = "Kinesis Firehose Destination"
 }
 
-variable s3_configuration {
-  type        = "map"
+variable "s3_configuration" {
+  type = object({
+    bucket_arn      = string,
+    buffer_interval = number,
+    buffer_size     = number,
+    prefix          = string
+  })
   description = "AWS S3 configuration"
-  default     = {}
 }
 
-variable enable {
-  type        = "string"
+variable "enable" {
+  type        = bool
   description = "Enable firehose"
-  default     = "1"
+  default     = true
+}
+
+locals {
+  enable_count = var.enable ? 1 : 0
 }
 
 ###############################################################################
@@ -40,7 +68,8 @@ variable enable {
 ###############################################################################
 
 resource "aws_iam_role" "firehose_role" {
-  name                  = "${var.name}"
+  count                 = local.enable_count
+  name                  = var.name
   path                  = "/environment/${terraform.workspace}/"
   force_detach_policies = true
 
@@ -59,6 +88,7 @@ resource "aws_iam_role" "firehose_role" {
   ]
 }
 EOF
+
 }
 
 data "aws_iam_policy_document" "firehose_role" {
@@ -74,21 +104,8 @@ data "aws_iam_policy_document" "firehose_role" {
     ]
 
     resources = [
-      "${lookup(var.s3_configuration, "bucket_arn")}",
-      "${lookup(var.s3_configuration, "bucket_arn")}/*",
-      "arn:aws:s3:::%FIREHOSE_BUCKET_NAME%",
-      "arn:aws:s3:::%FIREHOSE_BUCKET_NAME%/*",
-    ]
-  }
-
-  statement {
-    actions = [
-      "lambda:InvokeFunction",
-      "lambda:GetFunctionConfiguration",
-    ]
-
-    resources = [
-      "arn:aws:lambda:${var.region}:${var.account_id}:function:%FIREHOSE_DEFAULT_FUNCTION%:%FIREHOSE_DEFAULT_VERSION%",
+      lookup(var.s3_configuration, "bucket_arn"),
+      "${lookup(var.s3_configuration, "bucket_arn")}/*"
     ]
   }
 
@@ -104,23 +121,24 @@ data "aws_iam_policy_document" "firehose_role" {
 }
 
 resource "aws_iam_role_policy" "firehose_role" {
-  name = "${var.name}"
-  role = "${aws_iam_role.firehose_role.id}"
+  count = local.enable_count
+  name  = var.name
+  role  = aws_iam_role.firehose_role[0].id
 
-  policy = "${data.aws_iam_policy_document.firehose_role.json}"
+  policy = data.aws_iam_policy_document.firehose_role.json
 }
 
 resource "aws_kinesis_firehose_delivery_stream" "stream" {
-  count       = "${var.enable}"
-  name        = "${var.name}"
-  destination = "${var.destination}"
+  count       = local.enable_count
+  name        = var.name
+  destination = var.destination
 
   s3_configuration {
-    role_arn        = "${aws_iam_role.firehose_role.arn}"
-    bucket_arn      = "${lookup(var.s3_configuration, "bucket_arn")}"
-    buffer_interval = "${lookup(var.s3_configuration, "buffer_interval", 300)}"
-    buffer_size     = "${lookup(var.s3_configuration, "buffer_size", 5)}"
-    prefix          = "${lookup(var.s3_configuration, "prefix")}"
+    role_arn        = aws_iam_role.firehose_role[0].arn
+    bucket_arn      = lookup(var.s3_configuration, "bucket_arn")
+    buffer_interval = lookup(var.s3_configuration, "buffer_interval")
+    buffer_size     = lookup(var.s3_configuration, "buffer_size")
+    prefix          = lookup(var.s3_configuration, "prefix")
 
     cloudwatch_logging_options {
       enabled         = true
@@ -131,6 +149,6 @@ resource "aws_kinesis_firehose_delivery_stream" "stream" {
 }
 
 output "arn" {
-  value       = "${element(concat(aws_kinesis_firehose_delivery_stream.stream.*.arn, list("")), 0)}"
+  value       = var.enable ? aws_kinesis_firehose_delivery_stream.stream[0].arn : ""
   description = "ARN of the Kinesis Firehose"
 }
