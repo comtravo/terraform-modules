@@ -38,6 +38,41 @@ func TestVPCApplyEnabledBasic(t *testing.T) {
 	ValidateTerraformModuleOutputs(t, terraformOptions)
 }
 
+func TestVPCApplyEnabledBasic_tags(t *testing.T) {
+	t.Parallel()
+
+	vpc_name := fmt.Sprintf("vpc_enabled-%s", random.UniqueId())
+
+	terraformModuleVars := map[string]interface{}{
+		"enable":             true,
+		"vpc_name":           vpc_name,
+		"subdomain":          "foo.bar.baz",
+		"cidr":               "10.10.0.0/16",
+		"azs":                []string{"us-east-1a", "us-east-1b", "us-east-1c"},
+		"nat_az_number":      1,
+		"environment":        vpc_name,
+		"replication_factor": 3,
+		"tags": map[string]string{
+			"kubernetes.io/cluster/foo": "shared",
+		},
+		"public_subnet_tags": map[string]string{
+			"kubernetes.io/cluster/foo": "shared",
+			"kubernetes.io/role/elb":    "1",
+		},
+		"private_subnet_tags": map[string]string{
+			"kubernetes.io/cluster/foo":       "shared",
+			"kubernetes.io/role/internal-elb": "1",
+		},
+	}
+
+	terraformOptions := SetupTestCase(t, terraformModuleVars)
+	t.Logf("Terraform module inputs: %+v", *terraformOptions)
+	// defer terraform.Destroy(t, terraformOptions)
+
+	TerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 25)
+	ValidateTerraformModuleOutputs(t, terraformOptions)
+}
+
 func TestVPCApplyEnabledReplicationFactor(t *testing.T) {
 	t.Parallel()
 

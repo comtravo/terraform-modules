@@ -43,7 +43,10 @@ MIT Licensed. See [LICENSE](LICENSE) for full details.
 | enable\_dns\_hostnames | Enable DNS hostnames | `bool` | `true` | no |
 | enable\_dns\_support | Enable DNS support | `bool` | `true` | no |
 | nat\_az\_number | Subnet number to deploy NAT gateway in | `number` | `0` | no |
+| private\_subnet\_tags | n/a | `map` | `{}` | no |
+| public\_subnet\_tags | n/a | `map` | `{}` | no |
 | subdomain | Subdomain name | `string` | `""` | no |
+| tags | n/a | `map` | `{}` | no |
 
 ## Outputs
 
