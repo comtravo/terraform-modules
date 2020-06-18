@@ -69,16 +69,16 @@ locals {
 }
 
 variable private_subnet_tags {
-  type    = "map"
+  type    = map(string)
   default = {}
 }
 
 variable public_subnet_tags {
-  type    = "map"
+  type    = map(string)
   default = {}
 }
 
 variable tags {
-  type    = "map"
+  type    = map(string)
   default = {}
 }
