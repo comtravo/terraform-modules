@@ -25,7 +25,7 @@ output "http_listner_arn" {
 
 output "https_listner_arn" {
   description = "AWS ALB HTTP listner arn"
-  value       = var.enable ? aws_alb_listener.listener_https[0].arn : ""
+  value       = local.enable_https ? aws_alb_listener.listener_https[0].arn : ""
 }
 
 output "default_target_group_http" {
@@ -35,6 +35,6 @@ output "default_target_group_http" {
 
 output "default_target_group_https" {
   description = "Default HTTPS target group arn"
-  value       = var.enable ? aws_alb_target_group.dummy_https[0].arn : ""
+  value       = local.enable_https ? aws_alb_target_group.dummy_https[0].arn : ""
 }
 

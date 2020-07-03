@@ -22,7 +22,8 @@ module "website-alb" {
       data.aws_acm_certificate.comtravoDotCom.arn,
       data.aws_acm_certificate.webDotComtravoDotCom.arn,
       data.aws_acm_certificate.comtravoDotDe.arn
-    ]
+    ],
+     number_of_certificates = 3
   }
 }
 ```
@@ -45,7 +46,6 @@ module "website-alb" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | environment | The environment of the ALB. Used for tagging | `string` | n/a | yes |
-| https\_listener\_config | List of maps of HTTPS listenr objects | <pre>object({<br>    port         = string,<br>    certificates = list(string)<br>  })</pre> | n/a | yes |
 | name | AWS ALB name | `string` | n/a | yes |
 | security\_group\_ids | List of security groups to be associated with the ALB | `list(string)` | n/a | yes |
 | subnet\_ids | List of subnets IDs where the ALB would be serving | `list(string)` | n/a | yes |
@@ -53,6 +53,7 @@ module "website-alb" {
 | enable | Enable or Disable module | `bool` | `true` | no |
 | health\_check | Healthcheck for default target groups | `map(string)` | `{}` | no |
 | http\_listener\_port | HTTP listener port | `number` | `80` | no |
+| https\_listener\_config | List of maps of HTTPS listenr objects | <pre>object({<br>    port         = string,<br>    certificates = list(string),<br>    number_of_certificates = number<br>  })</pre> | `null` | no |
 | idle\_timeout | Idle timeout | `number` | `60` | no |
 | internal | Bool flag to indicate whether the ALB is internal or external | `bool` | `true` | no |
 | ip\_address\_type | Address type for the ALB. Can be ipv4 or dual | `string` | `"ipv4"` | no |

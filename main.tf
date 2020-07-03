@@ -23,7 +23,8 @@
  *       data.aws_acm_certificate.comtravoDotCom.arn,
  *       data.aws_acm_certificate.webDotComtravoDotCom.arn,
  *       data.aws_acm_certificate.comtravoDotDe.arn
- *     ]
+ *     ],
+*      number_of_certificates = 3
  *   }
  * }
  * ```
@@ -31,7 +32,7 @@
  */
 
 locals {
-  enable_https = can(var.https_listener_config.port) && var.enable ? true : false
+  enable_https = var.https_listener_config != null && var.enable == true ? true : false
 }
 
 locals {
@@ -40,13 +41,13 @@ locals {
 }
 
 locals {
-  certificate_length = local.enable_https ? length(lookup(var.https_listener_config, "certificates")) : 0
-  certificates       = local.enable_https ? lookup(var.https_listener_config, "certificates") : null
+  certificate_length = local.enable_https ? var.https_listener_config.number_of_certificates : 0
+  certificates       = local.enable_https ? var.https_listener_config.certificates : []
 }
 
 locals {
   default_cert                  = local.enable_https ? element(local.certificates, 0) : ""
-  additional_certificate_length = local.enable_https ? local.certificate_length - 1 : 0
+  additional_certificate_length = local.enable_https && local.certificate_length > 1 ? local.certificate_length - 1 : 0
 }
 
 resource "aws_alb" "alb" {
