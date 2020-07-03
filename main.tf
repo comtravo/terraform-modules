@@ -57,7 +57,7 @@ resource "aws_alb" "alb" {
   subnets                    = var.subnet_ids
   idle_timeout               = var.idle_timeout
   ip_address_type            = var.ip_address_type
-  enable_deletion_protection = true
+  enable_deletion_protection = var.enable_deletion_protection
 
   tags = {
     Environment = var.environment
