@@ -9,6 +9,12 @@ variable "enable" {
   type        = bool
 }
 
+variable "enable_deletion_protection" {
+  description = "Enable or Disable deletion protection"
+  default     = true
+  type        = bool
+}
+
 locals {
   enable_count = var.enable ? 1 : 0
 }

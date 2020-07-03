@@ -51,6 +51,7 @@ module "website-alb" {
 | subnet\_ids | List of subnets IDs where the ALB would be serving | `list(string)` | n/a | yes |
 | vpc\_id | VPC ID where the ALB needs to be provisioned | `string` | n/a | yes |
 | enable | Enable or Disable module | `bool` | `true` | no |
+| enable\_deletion\_protection | Enable or Disable deletion protection | `bool` | `true` | no |
 | health\_check | Healthcheck for default target groups | `map(string)` | `{}` | no |
 | http\_listener\_port | HTTP listener port | `number` | `80` | no |
 | https\_listener\_config | List of maps of HTTPS listenr objects | <pre>object({<br>    port         = string,<br>    certificates = list(string),<br>    number_of_certificates = number<br>  })</pre> | `null` | no |
