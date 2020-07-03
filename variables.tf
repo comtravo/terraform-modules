@@ -69,8 +69,9 @@ variable "timeouts" {
 variable "https_listener_config" {
   description = "List of maps of HTTPS listenr objects"
   type = object({
-    port         = string,
-    certificates = list(string)
+    port                   = string,
+    certificates           = list(string),
+    number_of_certificates = number
   })
   default = null
 }
