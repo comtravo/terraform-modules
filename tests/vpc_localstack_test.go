@@ -192,6 +192,8 @@ func ValidateTerraformModuleOutputs(t *testing.T, terraformOptions *terraform.Op
 	ValidateVPCRoute53ZoneID(t, terraformOptions)
 	ValidateVPCRoute53ZoneName(t, terraformOptions)
 
+	ValidateVPCSubdomainNameServers(t, terraformOptions)
+
 	ValidateVPCRoute53ZoneName(t, terraformOptions)
 
 	ValidateVPCRoutingTables(t, terraformOptions)
@@ -207,6 +209,17 @@ func ValidateVPCSubnets(t *testing.T, terraformOptions *terraform.Options) {
 	assert.Len(t, private_subnets, terraformOptions.Vars["replication_factor"].(int))
 	assert.Len(t, public_subnets, terraformOptions.Vars["replication_factor"].(int))
 	assert.NotEqual(t, public_subnets, private_subnets)
+}
+
+func ValidateVPCSubdomainNameServers(t *testing.T, terraformOptions *terraform.Options) {
+	publicSubdomainNameServers := terraform.OutputList(t, terraformOptions, "public_subdomain_name_servers")
+
+	if terraformOptions.Vars["subdomain"] == "" {
+		assert.Len(t, publicSubdomainNameServers, 0)
+	} else {
+		assert.Greater(t, len(publicSubdomainNameServers), 0)
+	}
+
 }
 
 func ValidateVPC(t *testing.T, terraformOptions *terraform.Options) {

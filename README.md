@@ -43,10 +43,10 @@ MIT Licensed. See [LICENSE](LICENSE) for full details.
 | enable\_dns\_hostnames | Enable DNS hostnames | `bool` | `true` | no |
 | enable\_dns\_support | Enable DNS support | `bool` | `true` | no |
 | nat\_az\_number | Subnet number to deploy NAT gateway in | `number` | `0` | no |
-| private\_subnet\_tags | n/a | `map` | `{}` | no |
-| public\_subnet\_tags | n/a | `map` | `{}` | no |
+| private\_subnet\_tags | n/a | `map(string)` | `{}` | no |
+| public\_subnet\_tags | n/a | `map(string)` | `{}` | no |
 | subdomain | Subdomain name | `string` | `""` | no |
-| tags | n/a | `map` | `{}` | no |
+| tags | n/a | `map(string)` | `{}` | no |
 
 ## Outputs
 
@@ -58,6 +58,7 @@ MIT Licensed. See [LICENSE](LICENSE) for full details.
 | private\_subnets | Private subnets |
 | private\_zone\_id | Private hosted zone ID |
 | public\_subdomain | Public subdomain name |
+| public\_subdomain\_name\_servers | Public subdomain name servers |
 | public\_subdomain\_zone\_id | Subdomain hosted zone ID |
 | public\_subnets | Public subnets |
 | subdomain\_zone\_id | Subdomain hosted zone ID |

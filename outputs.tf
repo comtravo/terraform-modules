@@ -9,8 +9,9 @@ locals {
     private_zone_id   = var.enable ? aws_route53_zone.net0ps[0].zone_id : ""
     private_subdomain = var.enable ? aws_route53_zone.net0ps[0].name : ""
 
-    public_subdomain_zone_id = var.enable && var.subdomain != "" ? aws_route53_zone.subdomain[0].zone_id : ""
-    public_subdomain         = var.enable && var.subdomain != "" ? var.subdomain : ""
+    public_subdomain_zone_id      = var.enable && var.subdomain != "" ? aws_route53_zone.subdomain[0].zone_id : ""
+    public_subdomain              = var.enable && var.subdomain != "" ? var.subdomain : ""
+    public_subdomain_name_servers = var.enable && var.subdomain != "" ? aws_route53_zone.subdomain[0].name_servers : []
 
     vpc_private_routing_table_id = var.enable ? aws_default_route_table.private[0].id : ""
     vpc_public_routing_table_id  = var.enable ? aws_route_table.public[0].id : ""
@@ -62,6 +63,11 @@ output "public_subdomain_zone_id" {
 output "public_subdomain" {
   value       = local.outputs.public_subdomain
   description = "Public subdomain name"
+}
+
+output "public_subdomain_name_servers" {
+  value       = local.outputs.public_subdomain_name_servers
+  description = "Public subdomain name servers"
 }
 
 output "private_subdomain" {
