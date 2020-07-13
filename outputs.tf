@@ -1,20 +1,20 @@
 locals {
   outputs = {
-    public_subnets  = var.enable ? aws_subnet.public.*.id : []
-    private_subnets = var.enable ? aws_subnet.private.*.id : []
+    public_subnets  = aws_subnet.public.*.id
+    private_subnets = aws_subnet.private.*.id
 
-    vpc_id         = var.enable ? aws_vpc.vpc[0].id : ""
-    vpc_default_sg = var.enable ? aws_default_security_group.vpc-default-sg[0].id : ""
+    vpc_id         = element(concat(aws_vpc.vpc.*.id, [""]), 0)
+    vpc_default_sg = element(concat(aws_default_security_group.vpc-default-sg.*.id, [""]), 0)
 
-    private_zone_id   = var.enable ? aws_route53_zone.net0ps[0].zone_id : ""
-    private_subdomain = var.enable ? aws_route53_zone.net0ps[0].name : ""
+    private_zone_id   = element(concat(aws_route53_zone.net0ps.*.zone_id, [""]), 0)
+    private_subdomain = element(concat(aws_route53_zone.net0ps.*.name, [""]), 0)
 
-    public_subdomain_zone_id      = var.enable && var.subdomain != "" ? aws_route53_zone.subdomain[0].zone_id : ""
-    public_subdomain              = var.enable && var.subdomain != "" ? var.subdomain : ""
-    public_subdomain_name_servers = var.enable && var.subdomain != "" ? aws_route53_zone.subdomain[0].name_servers : []
+    public_subdomain_zone_id      = element(concat(aws_route53_zone.subdomain.*.zone_id, [""]), 0)
+    public_subdomain              = var.subdomain
+    public_subdomain_name_servers = var.enable && var.subdomain != "" ? flatten(aws_route53_zone.subdomain.*.name_servers) : []
 
-    vpc_private_routing_table_id = var.enable ? aws_default_route_table.private[0].id : ""
-    vpc_public_routing_table_id  = var.enable ? aws_route_table.public[0].id : ""
+    vpc_private_routing_table_id = element(concat(aws_default_route_table.private.*.id, [""]), 0)
+    vpc_public_routing_table_id  = element(concat(aws_route_table.public.*.id, [""]), 0)
 
     dummy_dependency = null_resource.dummy_dependency
   }
