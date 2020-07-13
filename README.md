@@ -54,7 +54,7 @@ module "website-alb" {
 | enable\_deletion\_protection | Enable or Disable deletion protection | `bool` | `true` | no |
 | health\_check | Healthcheck for default target groups | `map(string)` | `{}` | no |
 | http\_listener\_port | HTTP listener port | `number` | `80` | no |
-| https\_listener\_config | List of maps of HTTPS listenr objects | <pre>object({<br>    port         = string,<br>    certificates = list(string),<br>    number_of_certificates = number<br>  })</pre> | `null` | no |
+| https\_listener\_config | List of maps of HTTPS listenr objects | <pre>object({<br>    port                   = string,<br>    certificates           = list(string),<br>    number_of_certificates = number<br>  })</pre> | `null` | no |
 | idle\_timeout | Idle timeout | `number` | `60` | no |
 | internal | Bool flag to indicate whether the ALB is internal or external | `bool` | `true` | no |
 | ip\_address\_type | Address type for the ALB. Can be ipv4 or dual | `string` | `"ipv4"` | no |
