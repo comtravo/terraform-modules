@@ -9,8 +9,14 @@ variable "cidr" {
 }
 
 variable "tags" {
-  description = "Map of tags to tag resources"
-  type        = map
+  description = "Map of tags to tag all resources"
+  type        = map(string)
+  default     = {}
+}
+
+variable "vpc_tags" {
+  description = "Map of tags to vpc"
+  type        = map(string)
   default     = {}
 }
 
@@ -73,11 +79,13 @@ variable "private_subnets" {
     number_of_subnets = number
     newbits           = number
     netnum_offset     = number
+    tags              = map(string)
   })
   default = {
     number_of_subnets = 3
     newbits           = 8
     netnum_offset     = 0
+    tags              = {}
   }
 }
 
@@ -87,11 +95,13 @@ variable "public_subnets" {
     number_of_subnets = number
     newbits           = number
     netnum_offset     = number
+    tags              = map(string)
   })
   default = {
     number_of_subnets = 3
     newbits           = 8
     netnum_offset     = 100
+    tags              = {}
   }
 }
 

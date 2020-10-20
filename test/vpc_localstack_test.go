@@ -33,15 +33,71 @@ func TestVPCApplyEnabled_basic(t *testing.T) {
 		},
 		"enable_dns_support":               true,
 		"assign_generated_ipv6_cidr_block": true,
-		"private_subnets": map[string]int{
+		"private_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     0,
+			"tags":              map[string]string{},
 		},
-		"public_subnets": map[string]int{
+		"public_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     100,
+			"tags":              map[string]string{},
+		},
+	}
+
+	terraformOptions := SetupTestCase(t, terraformModuleVars)
+	t.Logf("Terraform module inputs: %+v", *terraformOptions)
+	// defer terraform.Destroy(t, terraformOptions)
+
+	terraform.InitAndApply(t, terraformOptions)
+	ValidateTerraformModuleOutputs(t, terraformOptions)
+	ValidateNATGateways(t, terraformOptions, 1)
+	ValidatePrivateRoutingTables(t, terraformOptions, 1)
+	ValidateElasticIps(t, terraformOptions, 1)
+}
+
+func TestVPCApplyEnabled_basicTags(t *testing.T) {
+	t.Parallel()
+
+	vpc_name := fmt.Sprintf("vpc_enabled-%s", random.UniqueId())
+
+	terraformModuleVars := map[string]interface{}{
+		"enable":   true,
+		"vpc_name": vpc_name,
+		"vpc_tags": map[string]string{
+			"lorem": "ipsum",
+			"foo":   "bar",
+			"baz":   "jazz",
+		},
+		"subdomain":          "foo.bar.baz",
+		"cidr":               "10.10.0.0/16",
+		"availability_zones": []string{"us-east-1a", "us-east-1b", "us-east-1c"},
+		"tags": map[string]string{
+			"Name": vpc_name,
+		},
+		"nat_gateway": map[string]string{
+			"behavior": "one_nat_per_vpc",
+		},
+		"enable_dns_support":               true,
+		"assign_generated_ipv6_cidr_block": true,
+		"private_subnets": map[string]interface{}{
+			"number_of_subnets": 3,
+			"newbits":           8,
+			"netnum_offset":     0,
+			"tags": map[string]string{
+				"lorem": "ipsum",
+			},
+		},
+		"public_subnets": map[string]interface{}{
+			"number_of_subnets": 3,
+			"newbits":           8,
+			"netnum_offset":     100,
+			"tags": map[string]string{
+				"lorem": "ipsum",
+				"foo":   "bar",
+			},
 		},
 	}
 
@@ -75,15 +131,17 @@ func TestVPCApplyEnabled_twoAvailabilityZones(t *testing.T) {
 		},
 		"enable_dns_support":               true,
 		"assign_generated_ipv6_cidr_block": true,
-		"private_subnets": map[string]int{
+		"private_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     0,
+			"tags":              map[string]string{},
 		},
-		"public_subnets": map[string]int{
+		"public_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     100,
+			"tags":              map[string]string{},
 		},
 	}
 
@@ -117,15 +175,17 @@ func TestVPCApplyEnabled_differentSubnetConfigurations(t *testing.T) {
 		},
 		"enable_dns_support":               true,
 		"assign_generated_ipv6_cidr_block": true,
-		"private_subnets": map[string]int{
+		"private_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     0,
+			"tags":              map[string]string{},
 		},
-		"public_subnets": map[string]int{
+		"public_subnets": map[string]interface{}{
 			"number_of_subnets": 1,
 			"newbits":           8,
 			"netnum_offset":     100,
+			"tags":              map[string]string{},
 		},
 	}
 
@@ -160,15 +220,17 @@ func TestVPCApplyEnabled_noPublicSubdomain(t *testing.T) {
 		},
 		"enable_dns_support":               true,
 		"assign_generated_ipv6_cidr_block": true,
-		"private_subnets": map[string]int{
+		"private_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     0,
+			"tags":              map[string]string{},
 		},
-		"public_subnets": map[string]int{
+		"public_subnets": map[string]interface{}{
 			"number_of_subnets": 1,
 			"newbits":           8,
 			"netnum_offset":     100,
+			"tags":              map[string]string{},
 		},
 	}
 
@@ -203,15 +265,17 @@ func TestVPCApplyEnabled_natPerAZ(t *testing.T) {
 		},
 		"enable_dns_support":               true,
 		"assign_generated_ipv6_cidr_block": true,
-		"private_subnets": map[string]int{
+		"private_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     0,
+			"tags":              map[string]string{},
 		},
-		"public_subnets": map[string]int{
+		"public_subnets": map[string]interface{}{
 			"number_of_subnets": 1,
 			"newbits":           8,
 			"netnum_offset":     100,
+			"tags":              map[string]string{},
 		},
 	}
 
@@ -246,15 +310,17 @@ func TestVPCApplyEnabled_natPerAZInTwoAZ(t *testing.T) {
 		},
 		"enable_dns_support":               true,
 		"assign_generated_ipv6_cidr_block": true,
-		"private_subnets": map[string]int{
+		"private_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     0,
+			"tags":              map[string]string{},
 		},
-		"public_subnets": map[string]int{
+		"public_subnets": map[string]interface{}{
 			"number_of_subnets": 1,
 			"newbits":           8,
 			"netnum_offset":     100,
+			"tags":              map[string]string{},
 		},
 	}
 
@@ -290,15 +356,17 @@ func TestVPCApplyEnabled_externalElasticIPsNatPerAZ(t *testing.T) {
 		},
 		"enable_dns_support":               true,
 		"assign_generated_ipv6_cidr_block": true,
-		"private_subnets": map[string]int{
+		"private_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     0,
+			"tags":              map[string]string{},
 		},
-		"public_subnets": map[string]int{
+		"public_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     100,
+			"tags":              map[string]string{},
 		},
 	}
 
@@ -338,15 +406,17 @@ func TestVPCApplyEnabled_externalElasticIPsLessThanDesiredNATCount(t *testing.T)
 		},
 		"enable_dns_support":               true,
 		"assign_generated_ipv6_cidr_block": true,
-		"private_subnets": map[string]int{
+		"private_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     0,
+			"tags":              map[string]string{},
 		},
-		"public_subnets": map[string]int{
+		"public_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     100,
+			"tags":              map[string]string{},
 		},
 	}
 
@@ -386,15 +456,17 @@ func TestVPCApplyEnabled_externalElasticIPsSingleNAT(t *testing.T) {
 		},
 		"enable_dns_support":               true,
 		"assign_generated_ipv6_cidr_block": true,
-		"private_subnets": map[string]int{
+		"private_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     0,
+			"tags":              map[string]string{},
 		},
-		"public_subnets": map[string]int{
+		"public_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     100,
+			"tags":              map[string]string{},
 		},
 	}
 
@@ -433,15 +505,17 @@ func TestVPCApplyDisabled(t *testing.T) {
 		},
 		"enable_dns_support":               true,
 		"assign_generated_ipv6_cidr_block": true,
-		"private_subnets": map[string]int{
+		"private_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     0,
+			"tags":              map[string]string{},
 		},
-		"public_subnets": map[string]int{
+		"public_subnets": map[string]interface{}{
 			"number_of_subnets": 3,
 			"newbits":           8,
 			"netnum_offset":     100,
+			"tags":              map[string]string{},
 		},
 	}
 
@@ -541,8 +615,8 @@ func ValidateVPCSubnets(t *testing.T, terraformOptions *terraform.Options) {
 	private_subnets := terraform.OutputList(t, terraformOptions, "private_subnets")
 	public_subnets := terraform.OutputList(t, terraformOptions, "public_subnets")
 
-	require.Len(t, private_subnets, terraformOptions.Vars["private_subnets"].(map[string]int)["number_of_subnets"])
-	require.Len(t, public_subnets, terraformOptions.Vars["public_subnets"].(map[string]int)["number_of_subnets"])
+	require.Len(t, private_subnets, terraformOptions.Vars["private_subnets"].(map[string]interface{})["number_of_subnets"].(int))
+	require.Len(t, public_subnets, terraformOptions.Vars["public_subnets"].(map[string]interface{})["number_of_subnets"].(int))
 	require.NotEqual(t, public_subnets, private_subnets)
 	ValidateEachElementInArray(t, private_subnets, "subnet-*")
 	ValidateEachElementInArray(t, public_subnets, "subnet-*")

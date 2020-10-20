@@ -40,6 +40,7 @@ resource "aws_vpc" "vpc" {
     },
     var.tags,
     local.default_tags,
+    var.vpc_tags
   )
 }
 
@@ -202,6 +203,7 @@ resource "aws_subnet" "public" {
     },
     var.tags,
     local.default_tags,
+    var.public_subnets.tags
   )
 }
 
@@ -223,6 +225,7 @@ resource "aws_subnet" "private" {
     },
     var.tags,
     local.default_tags,
+    var.private_subnets.tags
   )
 }
 

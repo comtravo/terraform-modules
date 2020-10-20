@@ -44,11 +44,12 @@ MIT Licensed. See [LICENSE](LICENSE) for full details.
 | enable_dns_support | Enable DNS support in VPC | `bool` | `true` | no |
 | external_elastic_ips | List of elastic IPs to use instead of creating within the module | `list(string)` | `[]` | no |
 | nat_gateway | NAT gateway creation behavior. If `one_nat_per_availability_zone` A NAT gateway is created per availability zone. | <pre>object({<br>    behavior = string<br>  })</pre> | <pre>{<br>  "behavior": "one_nat_per_vpc"<br>}</pre> | no |
-| private_subnets | Private subnet CIDR ipv4 config | <pre>object({<br>    number_of_subnets = number<br>    newbits           = number<br>    netnum_offset     = number<br>  })</pre> | <pre>{<br>  "netnum_offset": 0,<br>  "newbits": 8,<br>  "number_of_subnets": 3<br>}</pre> | no |
-| public_subnets | Public subnet CIDR ipv4 config | <pre>object({<br>    number_of_subnets = number<br>    newbits           = number<br>    netnum_offset     = number<br>  })</pre> | <pre>{<br>  "netnum_offset": 100,<br>  "newbits": 8,<br>  "number_of_subnets": 3<br>}</pre> | no |
+| private_subnets | Private subnet CIDR ipv4 config | <pre>object({<br>    number_of_subnets = number<br>    newbits           = number<br>    netnum_offset     = number<br>    tags              = map(string)<br>  })</pre> | <pre>{<br>  "netnum_offset": 0,<br>  "newbits": 8,<br>  "number_of_subnets": 3,<br>  "tags": {}<br>}</pre> | no |
+| public_subnets | Public subnet CIDR ipv4 config | <pre>object({<br>    number_of_subnets = number<br>    newbits           = number<br>    netnum_offset     = number<br>    tags              = map(string)<br>  })</pre> | <pre>{<br>  "netnum_offset": 100,<br>  "newbits": 8,<br>  "number_of_subnets": 3,<br>  "tags": {}<br>}</pre> | no |
 | subdomain | Public subdomain name | `string` | `""` | no |
-| tags | Map of tags to tag resources | `map` | `{}` | no |
+| tags | Map of tags to tag all resources | `map(string)` | `{}` | no |
 | vpc_name | Name of the VPC | `string` | n/a | yes |
+| vpc_tags | Map of tags to vpc | `map(string)` | `{}` | no |
 
 ## Outputs
 
