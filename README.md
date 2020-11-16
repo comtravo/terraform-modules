@@ -33,13 +33,13 @@ module "website-alb" {
 | Name | Version |
 |------|---------|
 | terraform | >= 0.12 |
-| aws | ~> 2.0 |
+| aws | ~> 3.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | ~> 2.0 |
+| aws | ~> 3.0 |
 
 ## Inputs
 
