@@ -16,7 +16,7 @@ services:
       - localstack
 
   localstack:
-    image: localstack/localstack
+    image: localstack/localstack:0.11.4
     environment:
       - SERVICES=iam,sts,ec2,route53
       - DEFAULT_REGION=us-east-1
