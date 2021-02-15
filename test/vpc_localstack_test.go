@@ -661,7 +661,7 @@ func ValidateVPCRoute53ZoneName(t *testing.T, terraformOptions *terraform.Option
 	private_subdomain := terraform.Output(t, terraformOptions, "private_subdomain")
 
 	require.Equal(t, terraformOptions.Vars["subdomain"], public_subdomain)
-	require.Equal(t, fmt.Sprintf("%s-net0ps.com.", terraformOptions.Vars["vpc_name"]), private_subdomain)
+	require.Equal(t, fmt.Sprintf("%s-net0ps.com", terraformOptions.Vars["vpc_name"]), private_subdomain)
 }
 
 func ValidateVPCRoutingTables(t *testing.T, terraformOptions *terraform.Options) {
