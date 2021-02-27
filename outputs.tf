@@ -1,40 +1,40 @@
 output "id" {
   description = "AWS ALB id"
-  value       = var.enable ? aws_alb.alb[0].id : ""
+  value       = element(concat(aws_alb.alb.*.id, [""]), 0)
 }
 
 output "zone_id" {
   description = "AWS ALB zone id"
-  value       = var.enable ? aws_alb.alb[0].zone_id : ""
+  value       = element(concat(aws_alb.alb.*.zone_id, [""]), 0)
 }
 
 output "arn" {
   description = "AWS ALB ARN"
-  value       = var.enable ? aws_alb.alb[0].arn : ""
+  value       = element(concat(aws_alb.alb.*.arn, [""]), 0)
 }
 
 output "dns_name" {
   description = "AWS ALB DNS name"
-  value       = var.enable ? aws_alb.alb[0].dns_name : ""
+  value       = element(concat(aws_alb.alb.*.dns_name, [""]), 0)
 }
 
 output "http_listner_arn" {
   description = "AWS ALB HTTP listner arn"
-  value       = var.enable ? aws_alb_listener.listener_http[0].arn : ""
+  value       = element(concat(aws_alb_listener.listener_http.*.arn, [""]), 0)
 }
 
 output "https_listner_arn" {
   description = "AWS ALB HTTP listner arn"
-  value       = local.enable_https ? aws_alb_listener.listener_https[0].arn : ""
+  value       = element(concat(aws_alb_listener.listener_https.*.arn, [""]), 0)
 }
 
 output "default_target_group_http" {
   description = "Default HTTP target group arn"
-  value       = var.enable ? aws_alb_target_group.dummy_http[0].arn : ""
+  value       = element(concat(aws_alb_target_group.dummy_http.*.arn, [""]), 0)
 }
 
 output "default_target_group_https" {
   description = "Default HTTPS target group arn"
-  value       = local.enable_https ? aws_alb_target_group.dummy_https[0].arn : ""
+  value       = element(concat(aws_alb_target_group.dummy_https.*.arn, [""]), 0)
 }
 
