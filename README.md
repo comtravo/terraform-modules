@@ -19,7 +19,7 @@ MIT Licensed. See [LICENSE](LICENSE) for full details.
 
 | Name | Version |
 |------|---------|
-| terraform | >= 0.12 |
+| terraform | >= 0.13 |
 | aws | ~> 3.0 |
 
 ## Providers
@@ -33,15 +33,14 @@ MIT Licensed. See [LICENSE](LICENSE) for full details.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | account\_id | AWS account ID | `string` | n/a | yes |
-| name | Name of the firehose | `string` | n/a | yes |
-| s3\_configuration | AWS S3 configuration | <pre>object({<br>    bucket_arn      = string,<br>    buffer_interval = number,<br>    buffer_size     = number,<br>    prefix          = string<br>  })</pre> | n/a | yes |
 | destination | Kinesis Firehose Destination | `string` | `"s3"` | no |
 | enable | Enable firehose | `bool` | `true` | no |
+| name | Name of the firehose | `string` | n/a | yes |
 | region | AWS region | `string` | `"eu-west-1"` | no |
+| s3\_configuration | AWS S3 configuration | <pre>object({<br>    bucket_arn      = string,<br>    buffer_interval = number,<br>    buffer_size     = number,<br>    prefix          = string<br>  })</pre> | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | arn | ARN of the Kinesis Firehose |
-

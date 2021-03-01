@@ -3,7 +3,7 @@
 DOCKER_COMPOSE=docker-compose -f ./docker-compose.yml
 DOCKER_COMPOSE_DEVELOP=$(DOCKER_COMPOSE) -f ./docker-compose.develop.yml
 
-GENERATE_DOCS_COMMAND:=terraform-docs --sort-inputs-by-required markdown table . > README.md
+GENERATE_DOCS_COMMAND:=terraform-docs markdown . > README.md
 
 fmt:
 	@terraform fmt -recursive
@@ -16,7 +16,6 @@ build:
 	@$(DOCKER_COMPOSE) build
 
 test:
-	@cd tests && go test -v -tags=unit
 	@cd tests && go test -v -tags=integration
 
 test-docker:
