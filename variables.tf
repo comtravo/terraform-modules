@@ -27,11 +27,11 @@ variable "tags" {
 variable "cors_configuration" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/apigatewayv2_api#cors_configuration"
   type = list(object({
-    allow_credentials = string
-    allow_headers     = string
-    allow_methods     = string
-    allow_origins     = string
-    expose_headers    = string
+    allow_credentials = bool
+    allow_headers     = list(string)
+    allow_methods     = list(string)
+    allow_origins     = list(string)
+    expose_headers    = list(string)
     max_age           = number
   }))
   default = []

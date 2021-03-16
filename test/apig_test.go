@@ -3,6 +3,7 @@ package test
 import (
 	"fmt"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -10,17 +11,55 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAPIG_lambda(t *testing.T) {
+func TestAPIG_httpAPILambdaProxyBasic(t *testing.T) {
 	t.Parallel()
 
 	apigName := fmt.Sprintf("apig-%s", random.UniqueId())
-	exampleDir := "../examples/lambda/"
+	exampleDir := "../examples/http_api_lambda_proxy_basic/"
 
 	terraformOptions := SetupExample(t, apigName, exampleDir)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
 	TerraformApplyAndValidateOutputs(t, terraformOptions)
+}
+
+func TestAPIG_httpAPILambdaProxyCORS(t *testing.T) {
+	t.Parallel()
+
+	apigName := fmt.Sprintf("apig-%s", random.UniqueId())
+	exampleDir := "../examples/http_api_lambda_proxy_cors/"
+
+	terraformOptions := SetupExample(t, apigName, exampleDir)
+	t.Logf("Terraform module inputs: %+v", *terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
+
+	TerraformApplyAndValidateOutputs(t, terraformOptions)
+}
+
+func TestAPIG_httpAPILambdaProxyCustomDomain(t *testing.T) {
+
+	apigName := fmt.Sprintf("apig-%s", random.UniqueId())
+	exampleDir := "../examples/http_api_lambda_proxy_custom_domain/"
+
+	terraformOptions := SetupExample(t, apigName, exampleDir)
+	t.Logf("Terraform module inputs: %+v", *terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
+
+	TerraformApplyAndValidateOutputs(t, terraformOptions)
+
+	aws_apigatewayv2_domain_name_output := terraform.OutputListOfObjects(t, terraformOptions, "aws_apigatewayv2_domain_name")
+	expectedDomainName := strings.ToLower(fmt.Sprintf("%s.%s.foo.bar.com", apigName, apigName))
+	require.Len(t, aws_apigatewayv2_domain_name_output, 1)
+	require.Regexp(t, regexp.MustCompile("arn:aws:apigateway:us-east-1::/domainnames/*"), aws_apigatewayv2_domain_name_output[0]["arn"])
+	require.Equal(t, expectedDomainName, aws_apigatewayv2_domain_name_output[0]["domain_name"])
+	require.Equal(t, expectedDomainName, aws_apigatewayv2_domain_name_output[0]["id"])
+
+	aws_route53_record_output := terraform.OutputListOfObjects(t, terraformOptions, "aws_route53_record")
+	require.Len(t, aws_route53_record_output, 1)
+	require.Equal(t, "A", aws_route53_record_output[0]["type"])
+	require.Equal(t, expectedDomainName, aws_route53_record_output[0]["fqdn"])
+
 }
 
 func SetupExample(t *testing.T, apigName string, exampleDir string) *terraform.Options {
@@ -30,7 +69,7 @@ func SetupExample(t *testing.T, apigName string, exampleDir string) *terraform.O
 			"AWS_REGION": "us-east-1",
 		},
 		Vars: map[string]interface{}{
-			"name": apigName,
+			"name": strings.ToLower(apigName),
 		},
 	}
 	return terraformOptions

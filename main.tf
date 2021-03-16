@@ -1,8 +1,8 @@
 /**
-* # Terraform AWS module for [AWS API gateway V2](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html) with OpenAPI spec
+* # Terraform AWS module for [AWS API gateway V2](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api.html) with OpenAPI spec
 *
 * ## Introduction
-* This is a minimal Terraform module which accepts a AWS + OpenAPI spec and deploys an [AWS API Gateway V2](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html)
+* This is a minimal Terraform module which accepts a AWS + OpenAPI spec and deploys an [AWS API Gateway V2](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api.html)
 *
 * ## Usage
 * Check [examples](./examples) on how to use this module
@@ -95,12 +95,3 @@ resource "aws_route53_record" "this" {
     evaluate_target_health = false
   }
 }
-
-# resource "aws_apigatewayv2_api_mapping" "this" {
-#   count       = var.domain_settings.enable == true ? 1 : 0
-
-#   api_id      = aws_apigatewayv2_api.this.id
-#   stage_name  = aws_apigatewayv2_stage.this.name
-#   domain_name = aws_apigatewayv2_domain_name.this[0].domain_name
-#   base_path   = aws_api_gateway_rest_api.api.name
-# }
