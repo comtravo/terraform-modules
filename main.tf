@@ -17,15 +17,31 @@
 * MIT Licensed. See [LICENSE](LICENSE) for full details.
 */
 
+resource "aws_cloudwatch_log_group" "this" {
+  name              = var.name
+  retention_in_days = var.access_log_settings.retention_in_days
 
+  tags = var.tags
+}
 resource "aws_apigatewayv2_api" "this" {
-  name               = var.name
-  protocol_type      = var.protocol_type
-  description        = "${var.name} API Integration"
-  cors_configuration = var.cors_configuration
-  body               = var.body
-  version            = sha256(var.body)
-  tags               = var.tags
+  name          = var.name
+  protocol_type = var.protocol_type
+  description   = "${var.name} API Integration"
+  body          = var.body
+  version       = sha256(var.body)
+
+  dynamic cors_configuration {
+    for_each = var.cors_configuration
+    content {
+      allow_credentials = cors_configuration.value["allow_credentials"]
+      allow_headers     = cors_configuration.value["allow_headers"]
+      allow_methods     = cors_configuration.value["allow_methods"]
+      allow_origins     = cors_configuration.value["allow_origins"]
+      expose_headers    = cors_configuration.value["expose_headers"]
+      max_age           = cors_configuration.value["max_age"]
+    }
+  }
+  tags = var.tags
 }
 
 resource "aws_apigatewayv2_deployment" "this" {
@@ -46,7 +62,11 @@ resource "aws_apigatewayv2_stage" "this" {
   name          = var.stage
   description   = "${var.name} API stage: ${var.stage}"
   deployment_id = aws_apigatewayv2_deployment.this.id
-  tags          = var.tags
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.this.arn
+    format          = var.access_log_settings.format
+  }
+  tags = var.tags
 }
 
 resource "aws_apigatewayv2_domain_name" "this" {

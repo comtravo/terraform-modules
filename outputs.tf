@@ -21,3 +21,8 @@ output "aws_route53_record" {
   description = "aws_route53_record outputs"
   value       = aws_route53_record.this
 }
+
+output "aws_cloudwatch_log_group" {
+  description = "aws_cloudwatch_log_group outputs"
+  value       = aws_cloudwatch_log_group.this
+}

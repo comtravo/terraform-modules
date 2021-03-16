@@ -32,10 +32,9 @@ MIT Licensed. See [LICENSE](LICENSE) for full details.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| access\_log\_settings | https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html#apigateway-cloudwatch-log-formats | <pre>object({<br>    enable = bool<br>    format = string<br>  })</pre> | <pre>{<br>  "enable": true,<br>  "format": "JSON"<br>}</pre> | no |
+| access\_log\_settings | https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html#apigateway-cloudwatch-log-formats | <pre>object({<br>    format            = string<br>    retention_in_days = number<br>  })</pre> | <pre>{<br>  "format": "{ \"requestId\":\"$context.requestId\", \"ip\": \"$context.identity.sourceIp\", \"requestTime\":\"$context.requestTime\", \"httpMethod\":\"$context.httpMethod\",\"routeKey\":\"$context.routeKey\", \"status\":\"$context.status\",\"protocol\":\"$context.protocol\", \"responseLength\":\"$context.responseLength\" }",<br>  "retention_in_days": 90<br>}</pre> | no |
 | body | Definition of the API Gateway | `string` | n/a | yes |
-| cors\_configuration | https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/apigatewayv2_api#cors_configuration | `map` | `{}` | no |
-| domain\_name | Custom domain name | `string` | `""` | no |
+| cors\_configuration | https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/apigatewayv2_api#cors_configuration | <pre>list(object({<br>    allow_credentials = string<br>    allow_headers     = string<br>    allow_methods     = string<br>    allow_origins     = string<br>    expose_headers    = string<br>    max_age           = number<br>  }))</pre> | `[]` | no |
 | domain\_settings | https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/apigatewayv2_domain_name | <pre>object({<br>    enable          = bool<br>    domain_name     = string<br>    zone_id         = string<br>    certificate_arn = string<br>    endpoint_type   = string<br>    security_policy = string<br>  })</pre> | <pre>{<br>  "certificate_arn": "",<br>  "domain_name": "",<br>  "enable": false,<br>  "endpoint_type": "",<br>  "security_policy": "",<br>  "zone_id": ""<br>}</pre> | no |
 | name | Name of the API gateway deployment | `string` | n/a | yes |
 | protocol\_type | https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/apigatewayv2_api#protocol_type | `string` | n/a | yes |
@@ -50,4 +49,5 @@ MIT Licensed. See [LICENSE](LICENSE) for full details.
 | aws\_apigatewayv2\_deployment | aws\_apigatewayv2\_deployment outputs |
 | aws\_apigatewayv2\_domain\_name | aws\_apigatewayv2\_domain\_name outputs |
 | aws\_apigatewayv2\_stage | aws\_apigatewayv2\_stage outputs |
+| aws\_cloudwatch\_log\_group | aws\_cloudwatch\_log\_group outputs |
 | aws\_route53\_record | aws\_route53\_record outputs |

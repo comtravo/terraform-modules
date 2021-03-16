@@ -42,63 +42,54 @@ module "apig_lambda" {
 module "apig" {
   source = "../../"
 
-  name       = var.name
-  stage      = var.name
-  definition = <<EOF
+  name          = var.name
+  stage         = var.name
+  protocol_type = "HTTP"
+  tags = {
+    Name        = var.name
+    environment = "automates testing"
+  }
+  body = <<EOF
 ---
-swagger: "2.0"
+openapi: "3.0.1"
+x-amazon-apigateway-importexport-version: "1.0"
 info:
-  title: "foo"
-schemes:
-- "https"
+  title: "test"
 paths:
-  /log:
-    post:
-      consumes:
-      - "application/json"
+  /lambda:
+    x-amazon-apigateway-any-method:
       responses:
-        200:
-          description: "200 response"
-        400:
-          description: "400 response"
-        403:
-          description: "403 response"
+        default:
+          description: "Default response for ANY /lambda"
       x-amazon-apigateway-integration:
-        responses:
-          default:
-            statusCode: "200"
-          400:
-            statusCode: "400"
-          403:
-            statusCode: "403"
-        uri: "${module.apig_lambda.invoke_arn}"
-        passthroughBehavior: "when_no_match"
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
         httpMethod: "POST"
-        requestTemplates:
-          application/json: "{\"auth\":\"$input.params().header.get('Authorization')\"\
-            ,\"ticket\":$input.json('ticket_id')
-            ,\"save\": \"false\"
-            ,\"send\": \"false\"}"
-        type: "aws"
+        uri: "${module.apig_lambda.invoke_arn}"
+        connectionType: "INTERNET"
 EOF
 }
 
-output "rest_api_id" {
-  value = module.apig.rest_api_id
+output "aws_apigatewayv2_api" {
+  value = module.apig.aws_apigatewayv2_api
 }
 
-output "deployment_id" {
-  value = module.apig.deployment_id
+output "aws_apigatewayv2_deployment" {
+  value = module.apig.aws_apigatewayv2_deployment
 }
 
-output "deployment_invoke_url" {
-  value = module.apig.deployment_invoke_url
+output "aws_apigatewayv2_stage" {
+  value = module.apig.aws_apigatewayv2_stage
 }
 
-output "deployment_execution_arn" {
-  value = module.apig.deployment_execution_arn
+output "aws_apigatewayv2_domain_name" {
+  value = module.apig.aws_apigatewayv2_domain_name
 }
 
-output "url" {
-  value = module.apig.url
+output "aws_route53_record" {
+  value = module.apig.aws_route53_record
+}
+
+output "aws_cloudwatch_log_group" {
+  value = module.apig.aws_cloudwatch_log_group
 }

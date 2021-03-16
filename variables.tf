@@ -18,13 +18,6 @@ variable "stage" {
   type        = string
 }
 
-variable "domain_name" {
-  default     = ""
-  description = "Custom domain name"
-  type        = string
-}
-
-
 variable "tags" {
   default     = {}
   description = "Tags for resources"
@@ -33,18 +26,25 @@ variable "tags" {
 
 variable "cors_configuration" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/apigatewayv2_api#cors_configuration"
-  type        = map
-  default     = {}
+  type = list(object({
+    allow_credentials = string
+    allow_headers     = string
+    allow_methods     = string
+    allow_origins     = string
+    expose_headers    = string
+    max_age           = number
+  }))
+  default = []
 }
 
 variable "access_log_settings" {
   type = object({
-    enable = bool
-    format = string
+    format            = string
+    retention_in_days = number
   })
   default = {
-    enable = true
-    format = "JSON"
+    format            = "{ \"requestId\":\"$context.requestId\", \"ip\": \"$context.identity.sourceIp\", \"requestTime\":\"$context.requestTime\", \"httpMethod\":\"$context.httpMethod\",\"routeKey\":\"$context.routeKey\", \"status\":\"$context.status\",\"protocol\":\"$context.protocol\", \"responseLength\":\"$context.responseLength\" }"
+    retention_in_days = 90
   }
   description = "https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html#apigateway-cloudwatch-log-formats"
 }
