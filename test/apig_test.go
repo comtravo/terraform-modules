@@ -38,6 +38,7 @@ func TestAPIG_httpAPILambdaProxyCORS(t *testing.T) {
 }
 
 func TestAPIG_httpAPILambdaProxyCustomDomain(t *testing.T) {
+	t.Parallel()
 
 	apigName := fmt.Sprintf("apig-%s", random.UniqueId())
 	exampleDir := "../examples/http_api_lambda_proxy_custom_domain/"
