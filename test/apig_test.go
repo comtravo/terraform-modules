@@ -60,7 +60,6 @@ func TestAPIG_httpAPILambdaProxyCustomDomain(t *testing.T) {
 	require.Len(t, aws_route53_record_output, 1)
 	require.Equal(t, "A", aws_route53_record_output[0]["type"])
 	require.Equal(t, expectedDomainName, aws_route53_record_output[0]["fqdn"])
-
 }
 
 func SetupExample(t *testing.T, apigName string, exampleDir string) *terraform.Options {

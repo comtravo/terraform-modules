@@ -46,6 +46,7 @@ MIT Licensed. See [LICENSE](LICENSE) for full details.
 | Name | Description |
 |------|-------------|
 | aws\_apigatewayv2\_api | aws\_apigatewayv2\_api outputs |
+| aws\_apigatewayv2\_api\_mapping | aws\_apigatewayv2\_api\_mapping outputs |
 | aws\_apigatewayv2\_deployment | aws\_apigatewayv2\_deployment outputs |
 | aws\_apigatewayv2\_domain\_name | aws\_apigatewayv2\_domain\_name outputs |
 | aws\_apigatewayv2\_stage | aws\_apigatewayv2\_stage outputs |

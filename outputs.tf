@@ -26,3 +26,7 @@ output "aws_cloudwatch_log_group" {
   description = "aws_cloudwatch_log_group outputs"
   value       = aws_cloudwatch_log_group.this
 }
+output "aws_apigatewayv2_api_mapping" {
+  description = "aws_apigatewayv2_api_mapping outputs"
+  value       = aws_apigatewayv2_api_mapping.this
+}

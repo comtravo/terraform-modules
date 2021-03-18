@@ -83,6 +83,14 @@ resource "aws_apigatewayv2_domain_name" "this" {
   tags = var.tags
 }
 
+resource "aws_apigatewayv2_api_mapping" "this" {
+  count = var.domain_settings.enable == true ? 1 : 0
+
+  api_id      = aws_apigatewayv2_api.this.id
+  domain_name = aws_apigatewayv2_domain_name.this[0].id
+  stage       = aws_apigatewayv2_stage.this.id
+}
+
 resource "aws_route53_record" "this" {
   count   = var.domain_settings.enable == true ? 1 : 0
   name    = aws_apigatewayv2_domain_name.this[0].domain_name
