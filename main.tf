@@ -307,6 +307,10 @@ resource "aws_default_network_acl" "acl" {
     var.tags,
     local.default_tags,
   )
+
+  lifecycle {
+    ignore_changes = [subnet_ids]
+  }
 }
 
 # By default nothing is exposed to the Internet
