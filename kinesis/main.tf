@@ -3,35 +3,66 @@ variable "enable" {
   description = "Enable module"
   default     = true
 }
+variable "name" {
+  type        = string
+  description = "Name of the AWS Kinesis stream"
+}
 
-variable "configuration" {
-  type = object({
-    name                      = string
-    shard_count               = number
-    retention_period          = number
-    shard_level_metrics       = list(string)
-    enforce_consumer_deletion = bool
-    encryption_type           = string
-    kms_key_id                = string
-    tags                      = map(string)
-  })
-  description = "Kinesis stream configuration: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kinesis_stream"
+variable "shard_count" {
+  type        = number
+  description = "AWS Kinesis stream shard count"
+  default     = 1
+}
+variable "retention_period" {
+  type        = number
+  description = "AWS Kinesis stream retention period"
+  default     = 24
+}
+
+variable "shard_level_metrics" {
+  type        = list(string)
+  description = "AWS Kinesis stream shard level metrics"
+  default     = []
+}
+
+variable "enforce_consumer_deletion" {
+  type        = bool
+  description = "AWS Kinesis stream enforce deleting consumers before deleting the stream"
+  default     = true
+}
+
+variable "encryption_type" {
+  type        = string
+  description = "AWS Kinesis stream encryption type"
+  default     = "KMS"
+}
+
+variable "kms_key_id" {
+  type        = string
+  description = "AWS Kinesis stream KMS key ID"
+  default     = "alias/aws/kinesis"
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "AWS Kinesis stream tags"
+  default     = {}
 }
 
 resource "aws_kinesis_stream" "this" {
   count = var.enable ? 1 : 0
 
-  name                      = var.configuration.name
-  shard_count               = lookup(var.configuration, "shard_count", null)
-  retention_period          = lookup(var.configuration, "retention_period", null)
-  shard_level_metrics       = lookup(var.configuration, "shard_level_metrics", null)
-  enforce_consumer_deletion = lookup(var.configuration, "enforce_consumer_deletion", null)
-  encryption_type           = lookup(var.configuration, "encryption_type", null)
-  kms_key_id                = lookup(var.configuration, "kms_key_id", null)
-  tags                      = lookup(var.configuration, "tags", null)
+  name                      = var.name
+  shard_count               = var.shard_count
+  retention_period          = var.retention_period
+  shard_level_metrics       = var.shard_level_metrics
+  enforce_consumer_deletion = var.enforce_consumer_deletion
+  encryption_type           = var.encryption_type
+  kms_key_id                = var.kms_key_id
+  tags                      = var.tags
 }
 
 output "output" {
-  value       = aws_kinesis_stream.this
+  value       = aws_kinesis_stream.this[0]
   description = "AWS Kinesis attributes"
 }
