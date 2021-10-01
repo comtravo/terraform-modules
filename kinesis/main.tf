@@ -63,6 +63,6 @@ resource "aws_kinesis_stream" "this" {
 }
 
 output "output" {
-  value       = aws_kinesis_stream.this[0]
+  value       = try(aws_kinesis_stream.this[0], {})
   description = "AWS Kinesis attributes"
 }
