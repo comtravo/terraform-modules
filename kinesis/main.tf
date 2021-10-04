@@ -63,6 +63,9 @@ resource "aws_kinesis_stream" "this" {
 }
 
 output "output" {
-  value       = try(aws_kinesis_stream.this[0], {})
+  value = try(aws_kinesis_stream.this[0], {
+    name = "kinesis-stream-was-not-created"
+    arn  = "kinesis-stream-was-not-created"
+  })
   description = "AWS Kinesis attributes"
 }
