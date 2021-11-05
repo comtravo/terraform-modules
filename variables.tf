@@ -96,6 +96,15 @@ variable "health_check" {
 
 variable "access_logs" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#access_logs"
-  type        = map
-  default     = {}
+  type        = list(object({
+    enabled = bool
+    bucket = string
+    prefix = string
+  }))
+  default     = []
+
+  validation {
+    condition     = length(var.access_logs) <= 1
+    error_message = "Maximum 1 block of access_logs is allowed"
+  }
 }

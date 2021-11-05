@@ -64,9 +64,9 @@ resource "aws_alb" "alb" {
     for_each = var.access_logs
 
     content {
-      bucket        = each.value["bucket"]
-      prefix = each.value["prefix"]
-      enabled       = each.value["enabled"]
+      bucket        = each.value.bucket
+      prefix = each.value.prefix
+      enabled       = each.value.enabled
     }
   }
 
