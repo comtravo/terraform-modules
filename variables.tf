@@ -105,6 +105,6 @@ variable "access_logs" {
 
   validation {
     condition     = length(var.access_logs) <= 1
-    error_message = "Maximum 1 block of access_logs is allowed"
+    error_message = "Maximum 1 block of access_logs is allowed."
   }
 }
