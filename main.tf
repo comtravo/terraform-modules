@@ -60,6 +60,17 @@ resource "aws_alb" "alb" {
   ip_address_type            = var.ip_address_type
   enable_deletion_protection = var.enable_deletion_protection
 
+    dynamic "access_logs" {
+    for_each = var.access_logs
+
+    content {
+      bucket        = each.value["bucket"]
+      bucket_prefix = each.value["bucket_prefix"]
+      interval      = each.value["interval"]
+      enabled       = each.value["enabled"]
+    }
+  }
+
   tags = {
     Environment = var.environment
     Name        = var.name
@@ -139,18 +150,6 @@ resource "aws_alb_target_group" "dummy_http" {
     matcher             = lookup(var.health_check, "matcher", 301)
     port                = "traffic-port"
   }
-
-  dynamic "access_logs" {
-    for_each = var.access_logs
-
-    content {
-      bucket        = each.value["bucket"]
-      bucket_prefix = each.value["bucket_prefix"]
-      interval      = each.value["interval"]
-      enabled       = each.value["enabled"]
-    }
-  }
-
   tags = {
     Environment = var.environment
     Name        = var.name
