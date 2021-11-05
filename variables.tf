@@ -95,7 +95,7 @@ variable "health_check" {
 }
 
 variable "access_logs" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elb#access_logs"
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#access_logs"
   type        = map
   default     = {}
 }

@@ -60,7 +60,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_access_logs"></a> [access\_logs](#input\_access\_logs) | https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elb#access_logs | `map` | `{}` | no |
+| <a name="input_access_logs"></a> [access\_logs](#input\_access\_logs) | https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#access_logs | `map` | `{}` | no |
 | <a name="input_enable"></a> [enable](#input\_enable) | Enable or Disable module | `bool` | `true` | no |
 | <a name="input_enable_deletion_protection"></a> [enable\_deletion\_protection](#input\_enable\_deletion\_protection) | Enable or Disable deletion protection | `bool` | `true` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | The environment of the ALB. Used for tagging | `string` | n/a | yes |

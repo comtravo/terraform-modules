@@ -65,8 +65,7 @@ resource "aws_alb" "alb" {
 
     content {
       bucket        = each.value["bucket"]
-      bucket_prefix = each.value["bucket_prefix"]
-      interval      = each.value["interval"]
+      prefix = each.value["prefix"]
       enabled       = each.value["enabled"]
     }
   }
