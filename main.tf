@@ -140,6 +140,17 @@ resource "aws_alb_target_group" "dummy_http" {
     port                = "traffic-port"
   }
 
+  dynamic "access_logs" {
+    for_each = var.access_logs
+
+    content {
+      bucket        = each.value["bucket"]
+      bucket_prefix = each.value["bucket_prefix"]
+      interval      = each.value["interval"]
+      enabled       = each.value["enabled"]
+    }
+  }
+
   tags = {
     Environment = var.environment
     Name        = var.name

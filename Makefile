@@ -1,15 +1,13 @@
 #! make
 
-GENERATE_DOCS_COMMAND:=terraform-docs --sort-inputs-by-required markdown table . > README.md
-
 fmt:
-	@terraform fmt
+	@docker run --rm -v $(PWD):/opt/ct -w /opt/ct comtravo/terraform:py3-0.13.7-1.0.0 terraform fmt -recursive
 
 lint:
-	@terraform fmt -check
-	@tflint
+	@docker run --rm -v $(PWD):/opt/ct -w /opt/ct comtravo/terraform:py3-0.13.7-1.0.0 terraform fmt -check=true -write=false -diff=true
+	@docker run --rm -v $(PWD):/opt/ct -w /opt/ct comtravo/terraform:py3-0.13.7-1.0.0 tflint .
 
 generate-docs:
-	@$(GENERATE_DOCS_COMMAND)
+	@@docker run --rm -v $(PWD):/opt/ct -w /opt/ct comtravo/terraform:py3-0.13.7-1.0.0 terraform-docs markdown . > README.md
 
 all: lint generate-docs
