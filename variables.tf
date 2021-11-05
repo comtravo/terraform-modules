@@ -96,12 +96,12 @@ variable "health_check" {
 
 variable "access_logs" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#access_logs"
-  type        = list(object({
+  type = list(object({
     enabled = bool
-    bucket = string
-    prefix = string
+    bucket  = string
+    prefix  = string
   }))
-  default     = []
+  default = []
 
   validation {
     condition     = length(var.access_logs) <= 1
