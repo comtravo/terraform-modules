@@ -61,7 +61,7 @@ resource "aws_alb" "alb" {
   enable_deletion_protection = var.enable_deletion_protection
 
   dynamic "access_logs" {
-    for_each = var.access_logs
+    for_each = toset(var.access_logs)
 
     content {
       bucket  = each.value["bucket"]
