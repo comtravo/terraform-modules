@@ -53,7 +53,7 @@ func SetupExample(t *testing.T, name string, exampleDir string, targets []string
 		MaxRetries:         20,
 		TimeBetweenRetries: 1 * time.Second,
 		RetryableTerraformErrors: map[string]string{
-			".*status code: 409.*": "Retrt transient errors",
+			".*status code: 409.*": "Retry transient errors",
 		},
 	}
 
