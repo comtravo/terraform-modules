@@ -69,14 +69,18 @@ func TerraformApplyAndValidateBasicOutputs(t *testing.T, terraformOptions *terra
 	require.Equal(t, resourceCount.Change, 0)
 	require.Equal(t, resourceCount.Destroy, 0)
 
-	output := terraform.OutputMapOfObjects(t, terraformOptions, "output")
-	require.Equal(t, output["bucket"], terraformOptions.Vars["name"])
-	require.Equal(t, output["id"], terraformOptions.Vars["name"])
-	require.Equal(t, output["arn"], fmt.Sprintf("arn:aws:s3:::%s", terraformOptions.Vars["name"]))
-	require.Equal(t, output["bucket_domain_name"], fmt.Sprintf("%s.s3.amazonaws.com", terraformOptions.Vars["name"]))
-	require.Equal(t, output["force_destroy"], false)
-	require.Equal(t, output["acl"], "private")
+	bucket := terraform.OutputMapOfObjects(t, terraformOptions, "bucket")
+	require.Equal(t, bucket["bucket"], terraformOptions.Vars["name"])
+	require.Equal(t, bucket["id"], terraformOptions.Vars["name"])
+	require.Equal(t, bucket["arn"], fmt.Sprintf("arn:aws:s3:::%s", terraformOptions.Vars["name"]))
+	require.Equal(t, bucket["bucket_domain_name"], fmt.Sprintf("%s.s3.amazonaws.com", terraformOptions.Vars["name"]))
+	require.Equal(t, bucket["force_destroy"], false)
+	require.Equal(t, bucket["acl"], "private")
 
-	expectedServer_side_encryption_configuration := []map[string]interface{}([]map[string]interface{}{{"rule": []map[string]interface{}{{"apply_server_side_encryption_by_default": []map[string]interface{}{{"kms_master_key_id": "", "sse_algorithm": "AES256"}}, "bucket_key_enabled": false}}}})
-	require.Equal(t, output["server_side_encryption_configuration"], expectedServer_side_encryption_configuration)
+	expectedServerSideEncryptionConfiguration := []map[string]interface{}([]map[string]interface{}{{"rule": []map[string]interface{}{{"apply_server_side_encryption_by_default": []map[string]interface{}{{"kms_master_key_id": "", "sse_algorithm": "AES256"}}, "bucket_key_enabled": false}}}})
+	require.Equal(t, bucket["server_side_encryption_configuration"], expectedServerSideEncryptionConfiguration)
+
+	awsS3BucketOwnershipControls := terraform.OutputMapOfObjects(t, terraformOptions, "aws_s3_bucket_ownership_controls")
+	expectedAwsS3BucketOwnershipControls := map[string]interface{}(map[string]interface{}{"bucket": terraformOptions.Vars["name"], "id": terraformOptions.Vars["name"], "rule": []map[string]interface{}{{"object_ownership": "BucketOwnerPreferred"}}})
+	require.Equal(t, expectedAwsS3BucketOwnershipControls, awsS3BucketOwnershipControls)
 }

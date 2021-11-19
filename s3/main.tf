@@ -107,7 +107,17 @@ resource "aws_s3_bucket_public_access_block" "this" {
   ignore_public_acls      = var.block_public_access
 }
 
-output "output" {
+output "bucket" {
   description = "S3 bucket output"
   value       = try(aws_s3_bucket.this[0], {})
+}
+
+output "aws_s3_bucket_public_access_block" {
+  description = "S3 bucket output"
+  value       = try(aws_s3_bucket_public_access_block.this[0], {})
+}
+
+output "aws_s3_bucket_ownership_controls" {
+  description = "S3 bucket output"
+  value       = try(aws_s3_bucket_ownership_controls.this[0], {})
 }
