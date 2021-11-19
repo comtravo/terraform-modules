@@ -95,7 +95,7 @@ func TestS3_lifecycleRules(t *testing.T) {
 			"noncurrent_version_expiration": []map[string]interface{}(nil),
 			"noncurrent_version_transition": []map[string]interface{}(nil),
 			"prefix":                        "prefix1",
-			"tags":                          map[string]interface{}{},
+			"tags":                          map[string]interface{}(nil)
 			"transition":                    []map[string]interface{}(nil),
 		},
 	}
