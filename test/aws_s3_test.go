@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
@@ -34,6 +35,12 @@ func TestS3_basic(t *testing.T) {
 	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
 	exampleDir := "../s3/examples/basic/"
 
+	// targets := []string{"module.bucket.aws_s3_bucket.this"}
+
+	// createS3BucketOnlyOptions := SetupExample(t, name, exampleDir, targets) // avoid 409
+	// t.Logf("Terraform module inputs: %+v", *createS3BucketOnlyOptions)
+	// TerraformApplyAndValidateBasicOutputs(t, createS3BucketOnlyOptions)
+
 	terraformOptions := SetupExample(t, name, exampleDir, nil)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
@@ -48,13 +55,20 @@ func SetupExample(t *testing.T, name string, exampleDir string, targets []string
 		Vars: map[string]interface{}{
 			"name": name,
 		},
-		Targets: targets,
+		Targets:            targets,
+		MaxRetries:         10,
+		TimeBetweenRetries: 10 * time.Second,
+		RetryableTerraformErrors: map[string]string{
+			".*status code: 409.*": "Retrt transient errors",
+		},
 	}
+
 	return terraformOptions
 }
 
 func TerraformApplyAndValidateBasicOutputs(t *testing.T, terraformOptions *terraform.Options) {
 	terraformApplyOutput := terraform.InitAndApply(t, terraformOptions)
+
 	resourceCount := terraform.GetResourceCount(t, terraformApplyOutput)
 
 	require.Greater(t, resourceCount.Add, 0)

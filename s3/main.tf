@@ -87,25 +87,25 @@ resource "aws_s3_bucket" "this" {
   }
 }
 
-# resource "aws_s3_bucket_ownership_controls" "this" {
-#   count = var.enable ? 1 : 0
+resource "aws_s3_bucket_ownership_controls" "this" {
+  count = var.enable ? 1 : 0
 
-#   bucket = aws_s3_bucket.this[0].bucket
+  bucket = aws_s3_bucket.this[0].bucket
 
-#   rule {
-#     object_ownership = "BucketOwnerPreferred"
-#   }
-# }
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
 
-# resource "aws_s3_bucket_public_access_block" "this" {
-#   count = var.enable ? 1 : 0
+resource "aws_s3_bucket_public_access_block" "this" {
+  count = var.enable ? 1 : 0
 
-#   bucket                  = aws_s3_bucket.this[0].bucket
-#   block_public_acls       = var.block_public_access
-#   block_public_policy     = var.block_public_access
-#   restrict_public_buckets = var.block_public_access
-#   ignore_public_acls      = var.block_public_access
-# }
+  bucket                  = aws_s3_bucket.this[0].bucket
+  block_public_acls       = var.block_public_access
+  block_public_policy     = var.block_public_access
+  restrict_public_buckets = var.block_public_access
+  ignore_public_acls      = var.block_public_access
+}
 
 output "output" {
   description = "S3 bucket output"
