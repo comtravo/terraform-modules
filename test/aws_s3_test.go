@@ -35,12 +35,6 @@ func TestS3_basic(t *testing.T) {
 	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
 	exampleDir := "../s3/examples/basic/"
 
-	// targets := []string{"module.bucket.aws_s3_bucket.this"}
-
-	// createS3BucketOnlyOptions := SetupExample(t, name, exampleDir, targets) // avoid 409
-	// t.Logf("Terraform module inputs: %+v", *createS3BucketOnlyOptions)
-	// TerraformApplyAndValidateBasicOutputs(t, createS3BucketOnlyOptions)
-
 	terraformOptions := SetupExample(t, name, exampleDir, nil)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
