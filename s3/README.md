@@ -30,7 +30,7 @@ No modules.
 | <a name="input_force_destroy"></a> [force\_destroy](#input\_force\_destroy) | Force destroy the bucket | `bool` | `false` | no |
 | <a name="input_lifecycle_rules"></a> [lifecycle\_rules](#input\_lifecycle\_rules) | Lifecycle rule to apply to the bucket | <pre>list(object({<br>    id                                     = string<br>    prefix                                 = string<br>    tags                                   = map(string)<br>    abort_incomplete_multipart_upload_days = number<br>    expiration = object({<br>      days = integer<br>    })<br>  }))</pre> | `[]` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the S3 bucket | `string` | n/a | yes |
-| <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to the bucket | `map` | `{}` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to the bucket | `map(any)` | `{}` | no |
 
 ## Outputs
 

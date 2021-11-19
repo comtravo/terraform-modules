@@ -24,7 +24,7 @@ variable "force_destroy" {
 variable "tags" {
   default     = {}
   description = "Tags to apply to the bucket"
-  type        = map
+  type        = map(any)
 }
 
 variable "block_public_access" {
