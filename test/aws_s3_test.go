@@ -46,6 +46,26 @@ func TestS3_basic(t *testing.T) {
 	require.Equal(t, expectedAwsS3BucketPublicAccessBlock, awsS3BucketPublicAccessBlock)
 }
 
+func TestS3_public(t *testing.T) {
+	t.Parallel()
+
+	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
+	exampleDir := "../s3/examples/public/"
+
+	terraformOptions := SetupExample(t, name, exampleDir, nil)
+	t.Logf("Terraform module inputs: %+v", *terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
+
+	terraform.InitAndApply(t, terraformOptions)
+
+	bucket := terraform.OutputMapOfObjects(t, terraformOptions, "bucket")
+	require.Equal(t, bucket["acl"], "public-read")
+
+	awsS3BucketPublicAccessBlock := terraform.OutputMapOfObjects(t, terraformOptions, "aws_s3_bucket_public_access_block")
+	expectedAwsS3BucketPublicAccessBlock := map[string]interface{}(map[string]interface{}{"bucket": terraformOptions.Vars["name"], "id": terraformOptions.Vars["name"], "block_public_acls": false, "block_public_policy": false, "ignore_public_acls": false, "restrict_public_buckets": false})
+	require.Equal(t, expectedAwsS3BucketPublicAccessBlock, awsS3BucketPublicAccessBlock)
+}
+
 func SetupExample(t *testing.T, name string, exampleDir string, targets []string) *terraform.Options {
 
 	terraformOptions := &terraform.Options{
