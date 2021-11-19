@@ -40,6 +40,10 @@ func TestS3_basic(t *testing.T) {
 	defer terraform.Destroy(t, terraformOptions)
 
 	TerraformApplyAndValidateBasicOutputs(t, terraformOptions)
+
+	awsS3BucketPublicAccessBlock := terraform.OutputMapOfObjects(t, terraformOptions, "aws_s3_bucket_public_access_block")
+	expectedAwsS3BucketPublicAccessBlock := map[string]interface{}(map[string]interface{}{"bucket": terraformOptions.Vars["name"], "id": terraformOptions.Vars["name"], "block_public_acls": true, "block_public_policy": true, "ignore_public_acls": true, "restrict_public_buckets": true})
+	require.Equal(t, expectedAwsS3BucketPublicAccessBlock, awsS3BucketPublicAccessBlock)
 }
 
 func SetupExample(t *testing.T, name string, exampleDir string, targets []string) *terraform.Options {
