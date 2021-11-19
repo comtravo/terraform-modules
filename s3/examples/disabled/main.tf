@@ -9,6 +9,6 @@ module "bucket" {
   name   = var.name
 }
 
-output "output" {
-  value = module.bucket.output
+output "bucket" {
+  value = module.bucket.bucket
 }

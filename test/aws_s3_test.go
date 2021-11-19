@@ -101,6 +101,7 @@ func TestS3_lifecycleRules(t *testing.T) {
 	}
 
 	require.Equal(t, expectedLifecycleRule, bucket["lifecycle_rule"])
+	require.Equal(t, true, bucket["force_destroy"])
 
 }
 

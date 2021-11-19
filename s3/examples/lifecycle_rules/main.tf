@@ -9,6 +9,8 @@ module "bucket" {
   tags = {
     "tag1" = "value1"
   }
+
+  force_destroy = true
   lifecycle_rules = [{
     id = "rule1"
     prefix = "prefix1"

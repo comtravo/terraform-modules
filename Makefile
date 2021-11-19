@@ -11,7 +11,7 @@ fmt:
 lint:
 	@terraform fmt -check -recursive -diff=true
 	@test -z $(shell find . -type f -name '*.go' | xargs gofmt -l)
-	# @tflint
+	@tflint
 
 build:
 	@$(DOCKER_COMPOSE) build
@@ -22,6 +22,7 @@ test-aws:
 test-all: test-aws
 
 test-docker:
+	@$(DOCKER_COMPOSE) run --rm terraform make lint
 	@$(DOCKER_COMPOSE) run --rm terraform make test-all
 	@$(DOCKER_COMPOSE) down -v
 
@@ -30,7 +31,6 @@ develop:
 	@$(DOCKER_COMPOSE_DEVELOP) down -v
 
 generate-docs: fmt lint
-	@$(shell $(GENERATE_DOCS_COMMAND))
 	@find . -maxdepth 1 -type d -not -path '.' -exec sh -c 'cd {} && $(GENERATE_DOCS_COMMAND)' ';'
 
 clean-state:
