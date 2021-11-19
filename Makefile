@@ -1,7 +1,46 @@
-#!make
+#! make
 
-fmt-tf:
-	@docker run --rm -v $(PWD):/opt/ct -w /opt/ct comtravo/terraform:py3-0.13.7-1.0.0 terraform fmt -recursive
+DOCKER_COMPOSE=docker-compose -f ./docker-compose.yml
+DOCKER_COMPOSE_DEVELOP=$(DOCKER_COMPOSE) -f ./docker-compose.develop.yml
+GENERATE_DOCS_COMMAND:=terraform-docs markdown . > README.md
 
-generate-docs: fmt-tf
-	@docker run --rm -v $(PWD):/opt/ct -w /opt/ct/kinesis comtravo/terraform:py3-0.13.7-1.0.0 terraform-docs markdown . > ./kinesis/README.md
+fmt:
+	@terraform fmt -recursive
+	@find . -name '*.go' | xargs gofmt -w -s
+
+lint:
+	@terraform fmt -check -recursive -diff=true
+	@test -z $(shell find . -type f -name '*.go' | xargs gofmt -l)
+	@tflint
+
+build:
+	@$(DOCKER_COMPOSE) build
+
+test-aws:
+	@cd test && go test -tags=aws
+
+test-all: test-aws
+
+test-docker:
+	@$(DOCKER_COMPOSE) run --rm terraform make lint
+	@$(DOCKER_COMPOSE) run --rm terraform make test-all
+	@$(DOCKER_COMPOSE) down -v
+
+develop:
+	@$(DOCKER_COMPOSE_DEVELOP) run --rm terraform bash
+	@$(DOCKER_COMPOSE_DEVELOP) down -v
+
+generate-docs: fmt lint
+	@find . -maxdepth 1 -type d -not -path '.' -exec sh -c 'cd {} && $(GENERATE_DOCS_COMMAND)' ';'
+
+clean-state:
+	@find . -type f -name 'terraform.tfstate*' | xargs rm -rf
+	@find . -type d -name '.terraform' | xargs rm -rf
+
+clean-all: clean-state
+	@$(DOCKER_COMPOSE) down -v
+
+logs:
+	@$(DOCKER_COMPOSE) logs -f
+
+.PHONY: test
