@@ -66,6 +66,44 @@ func TestS3_public(t *testing.T) {
 	require.Equal(t, expectedAwsS3BucketPublicAccessBlock, awsS3BucketPublicAccessBlock)
 }
 
+func TestS3_lifecycleRules(t *testing.T) {
+	t.Parallel()
+
+	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
+	exampleDir := "../s3/examples/lifecycle_rules/"
+
+	terraformOptions := SetupExample(t, name, exampleDir, nil)
+	t.Logf("Terraform module inputs: %+v", *terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
+
+	terraform.InitAndApply(t, terraformOptions)
+
+	bucket := terraform.OutputMapOfObjects(t, terraformOptions, "bucket")
+
+	expectedLifecycleRule := []map[string]interface{}{
+		{
+			"abort_incomplete_multipart_upload_days": 7,
+			"enabled":                                true,
+			"expiration": []map[string]interface{}{
+				{
+					"date":                         "",
+					"days":                         365,
+					"expired_object_delete_marker": false,
+				},
+			},
+			"id":                            "rule1",
+			"noncurrent_version_expiration": []map[string]interface{}(nil),
+			"noncurrent_version_transition": []map[string]interface{}(nil),
+			"prefix":                        "prefix1",
+			"tags":                          map[string]interface{}{},
+			"transition":                    []map[string]interface{}(nil),
+		},
+	}
+
+	require.Equal(t, expectedLifecycleRule, bucket["lifecycle_rule"])
+
+}
+
 func SetupExample(t *testing.T, name string, exampleDir string, targets []string) *terraform.Options {
 
 	terraformOptions := &terraform.Options{

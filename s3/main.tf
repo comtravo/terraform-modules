@@ -38,7 +38,6 @@ variable "lifecycle_rules" {
   type = list(object({
     id                                     = string
     prefix                                 = string
-    tags                                   = map(string)
     abort_incomplete_multipart_upload_days = number
     expiration = object({
       days = number
@@ -67,13 +66,12 @@ resource "aws_s3_bucket" "this" {
   dynamic "lifecycle_rule" {
     for_each = var.lifecycle_rules
     content {
-      id                                     = each.value.id
-      prefix                                 = each.value.prefix
-      tags                                   = var.tags
+      id                                     = lifecycle_rule.value.id
+      prefix                                 = lifecycle_rule.value.prefix
       enabled                                = true
-      abort_incomplete_multipart_upload_days = each.value.abort_incomplete_multipart_upload_days
+      abort_incomplete_multipart_upload_days = lifecycle_rule.value.abort_incomplete_multipart_upload_days
       expiration {
-        days = each.value.expiration.days
+        days = lifecycle_rule.value.expiration.days
       }
     }
   }
