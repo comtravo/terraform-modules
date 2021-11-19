@@ -5,8 +5,8 @@ variable "name" {
 module "bucket" {
   source = "../../"
 
-  name = var.name
-  acl = "public-read"
+  name                = var.name
+  acl                 = "public-read"
   block_public_access = false
 }
 

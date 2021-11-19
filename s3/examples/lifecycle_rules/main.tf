@@ -12,8 +12,8 @@ module "bucket" {
 
   force_destroy = true
   lifecycle_rules = [{
-    id = "rule1"
-    prefix = "prefix1"
+    id                                     = "rule1"
+    prefix                                 = "prefix1"
     abort_incomplete_multipart_upload_days = 7
     expiration = {
       days = 365
