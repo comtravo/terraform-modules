@@ -42,7 +42,14 @@ func TestS3_basic(t *testing.T) {
 	TerraformApplyAndValidateBasicOutputs(t, terraformOptions)
 
 	awsS3BucketPublicAccessBlock := terraform.OutputMapOfObjects(t, terraformOptions, "aws_s3_bucket_public_access_block")
-	expectedAwsS3BucketPublicAccessBlock := map[string]interface{}(map[string]interface{}{"bucket": terraformOptions.Vars["name"], "id": terraformOptions.Vars["name"], "block_public_acls": true, "block_public_policy": true, "ignore_public_acls": true, "restrict_public_buckets": true})
+	expectedAwsS3BucketPublicAccessBlock := map[string]interface{}(map[string]interface{}{
+		"bucket":                  terraformOptions.Vars["name"],
+		"id":                      terraformOptions.Vars["name"],
+		"block_public_acls":       true,
+		"block_public_policy":     true,
+		"ignore_public_acls":      true,
+		"restrict_public_buckets": true,
+	})
 	require.Equal(t, expectedAwsS3BucketPublicAccessBlock, awsS3BucketPublicAccessBlock)
 }
 
@@ -62,7 +69,14 @@ func TestS3_public(t *testing.T) {
 	require.Equal(t, bucket["acl"], "public-read")
 
 	awsS3BucketPublicAccessBlock := terraform.OutputMapOfObjects(t, terraformOptions, "aws_s3_bucket_public_access_block")
-	expectedAwsS3BucketPublicAccessBlock := map[string]interface{}(map[string]interface{}{"bucket": terraformOptions.Vars["name"], "id": terraformOptions.Vars["name"], "block_public_acls": false, "block_public_policy": false, "ignore_public_acls": false, "restrict_public_buckets": false})
+	expectedAwsS3BucketPublicAccessBlock := map[string]interface{}(map[string]interface{}{
+		"bucket":                  terraformOptions.Vars["name"],
+		"id":                      terraformOptions.Vars["name"],
+		"block_public_acls":       false,
+		"block_public_policy":     false,
+		"ignore_public_acls":      false,
+		"restrict_public_buckets": false,
+	})
 	require.Equal(t, expectedAwsS3BucketPublicAccessBlock, awsS3BucketPublicAccessBlock)
 }
 
@@ -140,7 +154,21 @@ func TerraformApplyAndValidateBasicOutputs(t *testing.T, terraformOptions *terra
 	require.Equal(t, bucket["force_destroy"], false)
 	require.Equal(t, bucket["acl"], "private")
 
-	expectedServerSideEncryptionConfiguration := []map[string]interface{}([]map[string]interface{}{{"rule": []map[string]interface{}{{"apply_server_side_encryption_by_default": []map[string]interface{}{{"kms_master_key_id": "", "sse_algorithm": "AES256"}}, "bucket_key_enabled": false}}}})
+	expectedServerSideEncryptionConfiguration := []map[string]interface{}([]map[string]interface{}{
+		{
+			"rule": []map[string]interface{}{
+				{
+					"apply_server_side_encryption_by_default": []map[string]interface{}{
+						{
+							"kms_master_key_id": "",
+							"sse_algorithm":     "AES256",
+						},
+					},
+					"bucket_key_enabled": false,
+				},
+			},
+		},
+	})
 	require.Equal(t, bucket["server_side_encryption_configuration"], expectedServerSideEncryptionConfiguration)
 
 	awsS3BucketOwnershipControls := terraform.OutputMapOfObjects(t, terraformOptions, "aws_s3_bucket_ownership_controls")
