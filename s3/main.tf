@@ -22,9 +22,9 @@ variable "force_destroy" {
 }
 
 variable "tags" {
-  default     = {}
+  default     = null
   description = "Tags to apply to the bucket"
-  type        = map(any)
+  type        = map(string)
 }
 
 variable "block_public_access" {
