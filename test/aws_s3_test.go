@@ -66,7 +66,10 @@ func TestS3_versioning(t *testing.T) {
 	TerraformApplyAndValidateBasicOutputs(t, terraformOptions)
 
 	bucket := terraform.OutputMapOfObjects(t, terraformOptions, "bucket")
-	require.Equal(t, bucket["versioning"], true)
+	expectedVersioningConfiguration := map[string]interface{}{
+		"enabled": true,
+	}
+	require.Equal(t, bucket["versioning"], expectedVersioningConfiguration)
 }
 
 func TestS3_public(t *testing.T) {
