@@ -21,6 +21,11 @@ variable "force_destroy" {
   default     = false
 }
 
+variable "versioning" {
+  type        = bool
+  description = "Enable versioning in the S3 bucket"
+  default     = false
+}
 variable "tags" {
   default     = null
   description = "Tags to apply to the bucket"
@@ -55,6 +60,9 @@ resource "aws_s3_bucket" "this" {
   acl           = var.acl
   force_destroy = var.force_destroy
 
+  versioning {
+    enabled = var.versioning
+  }
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
