@@ -5,7 +5,7 @@ variable "name" {
 module "bucket" {
   source = "../../"
 
-  name = var.name
+  name       = var.name
   versioning = true
 }
 
