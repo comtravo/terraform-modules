@@ -53,6 +53,22 @@ func TestS3_basic(t *testing.T) {
 	require.Equal(t, expectedAwsS3BucketPublicAccessBlock, awsS3BucketPublicAccessBlock)
 }
 
+func TestS3_versioning(t *testing.T) {
+	t.Parallel()
+
+	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
+	exampleDir := "../s3/examples/versioning/"
+
+	terraformOptions := SetupExample(t, name, exampleDir, nil)
+	t.Logf("Terraform module inputs: %+v", *terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
+
+	TerraformApplyAndValidateBasicOutputs(t, terraformOptions)
+
+	bucket := terraform.OutputMapOfObjects(t, terraformOptions, "bucket")
+	require.Equal(t, bucket["versioning"], true)
+}
+
 func TestS3_public(t *testing.T) {
 	t.Parallel()
 
