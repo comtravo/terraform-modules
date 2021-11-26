@@ -356,3 +356,8 @@ resource "aws_lb_listener_rule" "service" {
 
   tags = var.tags
 }
+
+output "target_groups" {
+  value = aws_lb_target_group.service
+  description = "LB target group attributes"
+}
