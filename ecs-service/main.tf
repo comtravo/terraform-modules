@@ -196,6 +196,16 @@ variable "load_balancer" {
     })
     condition_host_header_values  = list(string)
     condition_path_pattern_values = list(string)
+    aws_route53_record = list(object({
+      zone_id                = string
+      name                   = string
+      type                   = string
+      alias = object({
+        name                   = string
+        zone_id                = string
+        evaluate_target_health = bool
+      })
+    }))
   }))
 }
 
@@ -357,6 +367,19 @@ resource "aws_lb_listener_rule" "service" {
   tags = var.tags
 }
 
+resource "aws_route53_record" "this" {
+  for_each = toset([for loadbalancer in var.load_balancer: load_balancer.aws_route53_record])
+
+  zone_id = each.value.zone_id
+  name    = each.value.name
+  type    = each.value.type
+
+  alias {
+    name                   = each.value.alias_name
+    zone_id                = each.value.alias_zone_id
+    evaluate_target_health = each.value.evaluate_target_health
+  }
+}
 output "target_groups" {
   value       = aws_lb_target_group.service
   description = "LB target group attributes"
