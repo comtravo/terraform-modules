@@ -39,4 +39,6 @@ No requirements.
 
 ## Outputs
 
-No output.
+| Name | Description |
+|------|-------------|
+| target\_groups | LB target group attributes |
