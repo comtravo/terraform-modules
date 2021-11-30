@@ -9,7 +9,6 @@ locals {
 
   service_count           = var.scheduling_strategy == "REPLICA" && var.enable == true ? 1 : 0
   daemon_count            = var.scheduling_strategy == "DAEMON" && var.enable == true ? 1 : 0
-  stability_check_command = "AWS_METADATA_SERVICE_TIMEOUT=10 AWS_METADATA_SERVICE_NUM_ATTEMPTS=18 python3 ${path.module}/scripts/wait_for_service_stable.py --region ${var.region} --service ${var.name} --cluster ${var.cluster_id} --role_to_assume ${var.ecs_stability_check_config.role} --service_stability_check_timeout ${var.ecs_stability_check_config.timeout} --interval_between_stability_checks ${var.ecs_stability_check_config.interval}"
 
   default_tags = {
     Name        = "${var.name}-${var.environment}"
@@ -112,6 +111,7 @@ resource "aws_ecs_service" "service" {
   deployment_maximum_percent         = local.max_healthy_percent
   deployment_minimum_healthy_percent = local.min_healthy_percent
   force_new_deployment               = var.force_new_deployment
+  wait_for_steady_state = true
   dynamic "ordered_placement_strategy" {
     for_each = var.placement_strategy
     content {
@@ -220,30 +220,6 @@ resource "aws_route53_record" "internal" {
     name                   = var.route53[count.index]["alias_name"]
     zone_id                = var.route53[count.index]["alias_zone_id"]
     evaluate_target_health = var.route53[count.index]["evaluate_target_health"]
-  }
-}
-
-resource "null_resource" "wait_for_service_deploy" {
-  count = local.service_count
-
-  triggers = {
-    task_definition = aws_ecs_service.service[0].task_definition
-  }
-
-  provisioner "local-exec" {
-    command = local.stability_check_command
-  }
-}
-
-resource "null_resource" "wait_for_daemon_deploy" {
-  count = local.daemon_count
-
-  triggers = {
-    task_definition = aws_ecs_service.daemon[0].task_definition
-  }
-
-  provisioner "local-exec" {
-    command = local.stability_check_command
   }
 }
 
