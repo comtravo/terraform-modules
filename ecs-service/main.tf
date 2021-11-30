@@ -7,8 +7,8 @@ locals {
   enable_count         = var.enable ? 1 : 0
   enable_scaling_count = var.enable == true && var.scheduling_strategy == "REPLICA" && var.capacity.enable_scaling == true ? 1 : 0
 
-  service_count           = var.scheduling_strategy == "REPLICA" && var.enable == true ? 1 : 0
-  daemon_count            = var.scheduling_strategy == "DAEMON" && var.enable == true ? 1 : 0
+  service_count = var.scheduling_strategy == "REPLICA" && var.enable == true ? 1 : 0
+  daemon_count  = var.scheduling_strategy == "DAEMON" && var.enable == true ? 1 : 0
 
   default_tags = {
     Name        = "${var.name}-${var.environment}"
@@ -111,7 +111,7 @@ resource "aws_ecs_service" "service" {
   deployment_maximum_percent         = local.max_healthy_percent
   deployment_minimum_healthy_percent = local.min_healthy_percent
   force_new_deployment               = var.force_new_deployment
-  wait_for_steady_state = true
+  wait_for_steady_state              = true
   dynamic "ordered_placement_strategy" {
     for_each = var.placement_strategy
     content {
