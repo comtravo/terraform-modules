@@ -86,5 +86,5 @@ resource "aws_iam_role_policy" "ssm_parameter_store_access" {
 
 output "output" {
   description = "IAM role"
-  value = aws_iam_role.this
+  value       = aws_iam_role.this
 }

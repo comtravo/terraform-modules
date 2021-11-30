@@ -15,8 +15,10 @@ module "bucket" {
     id                                     = "rule1"
     prefix                                 = "prefix1"
     abort_incomplete_multipart_upload_days = 7
-    expiration = {
-      days = 365
+    expiration                             = null
+    transition = {
+      days          = 7
+      storage_class = "GLACIER"
     }
   }]
 }
