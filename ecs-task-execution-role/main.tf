@@ -2,10 +2,6 @@ variable "name" {
   description = "name of the IAM role"
 }
 
-variable "name" {
-  description = "name of the IAM role"
-}
-
 resource "aws_iam_role" "this" {
   name                  = var.name
   path                  = "/environment/${terraform.workspace}/"
