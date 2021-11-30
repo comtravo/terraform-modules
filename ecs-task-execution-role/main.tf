@@ -79,13 +79,13 @@ data "aws_iam_policy_document" "ssm_parameter_store_access" {
 }
 
 resource "aws_iam_role_policy" "ssm_parameter_store_access" {
-  name   = "ct-ecs-ssm-access-${terraform.workspace}"
+  name   = "${var-name}-ssm-parameter-store-access"
   role   = aws_iam_role.task_execution_role.id
   policy = data.aws_iam_policy_document.ssm_parameter_store_access.json
 }
 
 
-output "aws_iam_role" {
+output "output" {
   description = "IAM role"
   value = aws_iam_role.this
 }
