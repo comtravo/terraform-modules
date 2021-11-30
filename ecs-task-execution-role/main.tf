@@ -78,8 +78,8 @@ data "aws_iam_policy_document" "ssm_parameter_store_access" {
 }
 
 resource "aws_iam_role_policy" "ssm_parameter_store_access" {
-  name   = "${var-name}-ssm-parameter-store-access"
-  role   = aws_iam_role.task_execution_role.id
+  name   = "${var.name}-ssm-parameter-store-access"
+  role   = aws_iam_role.this.id
   policy = data.aws_iam_policy_document.ssm_parameter_store_access.json
 }
 
