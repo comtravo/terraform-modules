@@ -40,7 +40,7 @@ data "aws_iam_policy_document" "ecr_pull_access" {
 }
 
 resource "aws_iam_role_policy" "ecr_pull_access" {
-  name   = "${var-name}-ecr-pull-access"
+  name   = "${var.name}-ecr-pull-access"
   role   = aws_iam_role.this.id
   policy = data.aws_iam_policy_document.ecr_pull_access.json
 }
@@ -71,7 +71,7 @@ data "aws_iam_policy_document" "ssm_parameter_store_access" {
     ]
 
     resources = [
-      "arn:aws:ssm:${data.aws_region.name}:${data.aws_caller_identity.current.account_id}:parameter/${upper(terraform.workspace)}*",
+      "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/${upper(terraform.workspace)}*",
       data.aws_kms_alias.ssm.arn,
     ]
   }
