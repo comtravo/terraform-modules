@@ -41,12 +41,6 @@ variable "execution_role_arn" {
   description = "ECS task execution role arn"
 }
 
-variable "deregistration_delay" {
-  default     = 60
-  type        = number
-  description = "Deregistration delay"
-}
-
 variable "force_new_deployment" {
   type        = bool
   default     = false
@@ -115,35 +109,10 @@ variable "placement_strategy" {
   ]
 }
 
-variable "health_check" {
-  type        = map(string)
-  default     = {}
-  description = "ECS service target group health check configuration"
-}
-
-variable "route53" {
-  type = list(object({
-    zone_id                = string
-    name                   = string
-    type                   = string
-    alias_name             = string
-    alias_zone_id          = string
-    evaluate_target_health = bool
-  }))
-  default     = []
-  description = "ECS service R53 configuration"
-}
-
 variable "scheduling_strategy" {
   default     = "REPLICA"
   type        = string
   description = "ECS service scheduling strategy"
-}
-
-variable "load_balancing_algorithm_type" {
-  type        = string
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group#load_balancing_algorithm_type"
-  default     = "least_outstanding_requests"
 }
 
 variable "capacity" {
