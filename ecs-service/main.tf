@@ -169,7 +169,7 @@ resource "aws_route53_record" "this" {
   }
 }
 
-output "target_groups" {
+output "target_group" {
   value       = aws_lb_target_group.service
   description = "LB target group attributes"
 }

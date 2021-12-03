@@ -8,6 +8,6 @@ module "ecs_service" {
   name = var.name
 }
 
-output "target_groups" {
-  value = module.ecs_service.target_groups
+output "target_group" {
+  value = module.ecs_service.target_group
 }
