@@ -128,7 +128,7 @@ variable "capacity" {
 
 variable "deployment_percent" {
   type = object({
-    max_healthy_percent = number
+    max_percent = number
     min_healthy_percent = number
   })
   description = "ECS deployment healthy percentage"
