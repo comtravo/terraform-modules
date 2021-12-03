@@ -138,46 +138,6 @@ variable "deployment_percent" {
   }
 }
 
-# variable "load_balancer" {
-#   description = "Target groups to create and attach to the load balancer"
-#   type = map(object({
-#     listener_arn                  = string
-#     load_balancing_algorithm_type = string
-#     deregistration_delay          = number
-#     container_port                = number
-#     protocol                      = string
-#     health_check = object({
-#       enabled             = bool
-#       healthy_threshold   = number
-#       matcher             = string
-#       interval            = number
-#       path                = string
-#       port                = number
-#       protocol            = string
-#       timeout             = number
-#       unhealthy_threshold = number
-#     })
-#     stickiness = object({
-#       enabled         = bool
-#       type            = string
-#       cookie_duration = number
-#       cookie_name     = string
-#     })
-#     condition_host_header_values  = list(string)
-#     condition_path_pattern_values = list(string)
-#     aws_route53_record = list(object({
-#       zone_id = string
-#       name    = string
-#       type    = string
-#       alias = object({
-#         name                   = string
-#         zone_id                = string
-#         evaluate_target_health = bool
-#       })
-#     }))
-#   }))
-# }
-
 variable "load_balancer" {
   description = "Target groups to create and attach to the load balancer"
   type = object({
