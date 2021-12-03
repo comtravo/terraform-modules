@@ -5,20 +5,8 @@ variable "name" {
 module "bucket" {
   source = "../../"
 
-  name = var.name
-  tags = {
-    "tag1" = "value1"
-  }
-
-  force_destroy = true
-  lifecycle_rules = [{
-    id                                     = "rule1"
-    prefix                                 = "prefix1"
-    abort_incomplete_multipart_upload_days = 7
-    expiration = {
-      days = 365
-    }
-  }]
+  name       = var.name
+  versioning = true
 }
 
 output "bucket" {

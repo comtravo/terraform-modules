@@ -31,7 +31,7 @@ develop:
 	@$(DOCKER_COMPOSE_DEVELOP) down -v
 
 generate-docs: fmt lint
-	@find . -maxdepth 1 -type d -not -path '.' -exec sh -c 'cd {} && $(GENERATE_DOCS_COMMAND)' ';'
+	@find . -maxdepth 1 -type d -not -path '.' -not -path '.github' -not -path 'test' -exec sh -c 'cd {} && $(GENERATE_DOCS_COMMAND)' ';'
 
 clean-state:
 	@find . -type f -name 'terraform.tfstate*' | xargs rm -rf

@@ -21,10 +21,15 @@ variable "force_destroy" {
   default     = false
 }
 
+variable "versioning" {
+  type        = bool
+  description = "Enable versioning in the S3 bucket"
+  default     = false
+}
 variable "tags" {
-  default     = {}
+  default     = null
   description = "Tags to apply to the bucket"
-  type        = map(any)
+  type        = map(string)
 }
 
 variable "block_public_access" {
@@ -42,6 +47,10 @@ variable "lifecycle_rules" {
     expiration = object({
       days = number
     })
+    transition = object({
+      days          = number
+      storage_class = string
+    })
   }))
   default = []
 }
@@ -55,6 +64,9 @@ resource "aws_s3_bucket" "this" {
   acl           = var.acl
   force_destroy = var.force_destroy
 
+  versioning {
+    enabled = var.versioning
+  }
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
@@ -70,9 +82,25 @@ resource "aws_s3_bucket" "this" {
       prefix                                 = lifecycle_rule.value.prefix
       enabled                                = true
       abort_incomplete_multipart_upload_days = lifecycle_rule.value.abort_incomplete_multipart_upload_days
-      expiration {
-        days = lifecycle_rule.value.expiration.days
+
+      dynamic "expiration" {
+        for_each = lifecycle_rule.value.expiration != null ? [lifecycle_rule.value.expiration] : []
+
+        content {
+          days = expiration.value.days
+        }
       }
+
+      dynamic "transition" {
+        for_each = lifecycle_rule.value.transition != null ? [lifecycle_rule.value.transition] : []
+
+        content {
+          days          = transition.value.days
+          storage_class = transition.value.storage_class
+        }
+      }
+
+
     }
   }
 

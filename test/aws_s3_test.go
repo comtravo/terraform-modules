@@ -42,8 +42,37 @@ func TestS3_basic(t *testing.T) {
 	TerraformApplyAndValidateBasicOutputs(t, terraformOptions)
 
 	awsS3BucketPublicAccessBlock := terraform.OutputMapOfObjects(t, terraformOptions, "aws_s3_bucket_public_access_block")
-	expectedAwsS3BucketPublicAccessBlock := map[string]interface{}(map[string]interface{}{"bucket": terraformOptions.Vars["name"], "id": terraformOptions.Vars["name"], "block_public_acls": true, "block_public_policy": true, "ignore_public_acls": true, "restrict_public_buckets": true})
+	expectedAwsS3BucketPublicAccessBlock := map[string]interface{}(map[string]interface{}{
+		"bucket":                  terraformOptions.Vars["name"],
+		"id":                      terraformOptions.Vars["name"],
+		"block_public_acls":       true,
+		"block_public_policy":     true,
+		"ignore_public_acls":      true,
+		"restrict_public_buckets": true,
+	})
 	require.Equal(t, expectedAwsS3BucketPublicAccessBlock, awsS3BucketPublicAccessBlock)
+}
+
+func TestS3_versioning(t *testing.T) {
+	t.Parallel()
+
+	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
+	exampleDir := "../s3/examples/versioning/"
+
+	terraformOptions := SetupExample(t, name, exampleDir, nil)
+	t.Logf("Terraform module inputs: %+v", *terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
+
+	TerraformApplyAndValidateBasicOutputs(t, terraformOptions)
+
+	bucket := terraform.OutputMapOfObjects(t, terraformOptions, "bucket")
+	expectedVersioningConfiguration := []map[string]interface{}([]map[string]interface{}{
+		{
+			"enabled":    true,
+			"mfa_delete": false,
+		},
+	})
+	require.Equal(t, expectedVersioningConfiguration, bucket["versioning"])
 }
 
 func TestS3_public(t *testing.T) {
@@ -62,15 +91,22 @@ func TestS3_public(t *testing.T) {
 	require.Equal(t, bucket["acl"], "public-read")
 
 	awsS3BucketPublicAccessBlock := terraform.OutputMapOfObjects(t, terraformOptions, "aws_s3_bucket_public_access_block")
-	expectedAwsS3BucketPublicAccessBlock := map[string]interface{}(map[string]interface{}{"bucket": terraformOptions.Vars["name"], "id": terraformOptions.Vars["name"], "block_public_acls": false, "block_public_policy": false, "ignore_public_acls": false, "restrict_public_buckets": false})
+	expectedAwsS3BucketPublicAccessBlock := map[string]interface{}(map[string]interface{}{
+		"bucket":                  terraformOptions.Vars["name"],
+		"id":                      terraformOptions.Vars["name"],
+		"block_public_acls":       false,
+		"block_public_policy":     false,
+		"ignore_public_acls":      false,
+		"restrict_public_buckets": false,
+	})
 	require.Equal(t, expectedAwsS3BucketPublicAccessBlock, awsS3BucketPublicAccessBlock)
 }
 
-func TestS3_lifecycleRules(t *testing.T) {
+func TestS3_lifecycleRulesExpiration(t *testing.T) {
 	t.Parallel()
 
 	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
-	exampleDir := "../s3/examples/lifecycle_rules/"
+	exampleDir := "../s3/examples/lifecycle_rules_expiration/"
 
 	terraformOptions := SetupExample(t, name, exampleDir, nil)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
@@ -97,6 +133,45 @@ func TestS3_lifecycleRules(t *testing.T) {
 			"prefix":                        "prefix1",
 			"tags":                          map[string]interface{}{},
 			"transition":                    []map[string]interface{}(nil),
+		},
+	}
+
+	require.Equal(t, expectedLifecycleRule, bucket["lifecycle_rule"])
+	require.Equal(t, true, bucket["force_destroy"])
+
+}
+
+func TestS3_lifecycleRulesTransition(t *testing.T) {
+	t.Parallel()
+
+	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
+	exampleDir := "../s3/examples/lifecycle_rules_transition/"
+
+	terraformOptions := SetupExample(t, name, exampleDir, nil)
+	t.Logf("Terraform module inputs: %+v", *terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
+
+	terraform.InitAndApply(t, terraformOptions)
+
+	bucket := terraform.OutputMapOfObjects(t, terraformOptions, "bucket")
+
+	expectedLifecycleRule := []map[string]interface{}{
+		{
+			"abort_incomplete_multipart_upload_days": 7,
+			"enabled":                                true,
+			"expiration":                             []map[string]interface{}(nil),
+			"id":                                     "rule1",
+			"noncurrent_version_expiration":          []map[string]interface{}(nil),
+			"noncurrent_version_transition":          []map[string]interface{}(nil),
+			"prefix":                                 "prefix1",
+			"tags":                                   map[string]interface{}{},
+			"transition": []map[string]interface{}{
+				{
+					"days":          7,
+					"storage_class": "GLACIER",
+					"date":          "",
+				},
+			},
 		},
 	}
 
@@ -140,7 +215,21 @@ func TerraformApplyAndValidateBasicOutputs(t *testing.T, terraformOptions *terra
 	require.Equal(t, bucket["force_destroy"], false)
 	require.Equal(t, bucket["acl"], "private")
 
-	expectedServerSideEncryptionConfiguration := []map[string]interface{}([]map[string]interface{}{{"rule": []map[string]interface{}{{"apply_server_side_encryption_by_default": []map[string]interface{}{{"kms_master_key_id": "", "sse_algorithm": "AES256"}}, "bucket_key_enabled": false}}}})
+	expectedServerSideEncryptionConfiguration := []map[string]interface{}([]map[string]interface{}{
+		{
+			"rule": []map[string]interface{}{
+				{
+					"apply_server_side_encryption_by_default": []map[string]interface{}{
+						{
+							"kms_master_key_id": "",
+							"sse_algorithm":     "AES256",
+						},
+					},
+					"bucket_key_enabled": false,
+				},
+			},
+		},
+	})
 	require.Equal(t, bucket["server_side_encryption_configuration"], expectedServerSideEncryptionConfiguration)
 
 	awsS3BucketOwnershipControls := terraform.OutputMapOfObjects(t, terraformOptions, "aws_s3_bucket_ownership_controls")
