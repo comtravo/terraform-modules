@@ -158,6 +158,16 @@ resource "aws_route53_record" "this" {
   }
 }
 
+output "aws_ecs_service" {
+  value       = aws_ecs_service.service
+  description = "AWS ECS service attributes"
+}
+
+output "aws_ecs_task_definition" {
+  value       = aws_ecs_task_definition.this
+  description = "AWS ECS task definition attributes"
+}
+
 output "target_group" {
   value       = aws_lb_target_group.service
   description = "LB target group attributes"
