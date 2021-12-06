@@ -13,7 +13,7 @@ variable "subnets" {
   description = "The subnets to attach to the loadbalancer"
 }
 
-variable "enaable_delete_protection" {
+variable "enable_delete_protection" {
   type        = bool
   description = "Whether the loadbalancer should have delete protection enabled"
   default     = true
@@ -35,7 +35,7 @@ resource "aws_lb" "this" {
   name                             = var.name
   internal                         = var.internal
   load_balancer_type               = "network"
-  enable_deletion_protection       = var.enaable_delete_protection
+  enable_deletion_protection       = var.enable_delete_protection
   enable_cross_zone_load_balancing = var.enable_cross_zone_load_balancing
   subnets                          = var.subnets
   tags                             = var.tags
