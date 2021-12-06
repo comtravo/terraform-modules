@@ -94,7 +94,6 @@ resource "aws_lb_target_group" "service" {
   load_balancing_algorithm_type = var.load_balancer.load_balancing_algorithm_type
 
   health_check {
-    enabled             = var.load_balancer.health_check.enabled
     healthy_threshold   = var.load_balancer.health_check.healthy_threshold
     unhealthy_threshold = var.load_balancer.health_check.unhealthy_threshold
     matcher             = var.load_balancer.health_check.matcher
@@ -105,14 +104,9 @@ resource "aws_lb_target_group" "service" {
     timeout             = var.load_balancer.health_check.timeout
   }
 
-  dynamic "stickiness" {
-    for_each = var.load_balancer.stickiness != null ? [var.load_balancer.stickiness] : []
-    content {
-      type            = stickiness.value.type
-      enabled         = stickiness.value.enabled
-      cookie_duration = stickiness.value.cookie_duration
-      cookie_name     = stickiness.value.cookie_name
-    }
+  stickiness {
+    type            = "source_ip"
+    enabled         = true
   }
 
   tags = var.tags

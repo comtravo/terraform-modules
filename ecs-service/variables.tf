@@ -147,24 +147,13 @@ variable "load_balancer" {
     container_port                = number
     protocol                      = string
     health_check = object({
-      enabled             = bool
       healthy_threshold   = number
-      matcher             = string
       interval            = number
-      path                = string
       port                = number
       protocol            = string
       timeout             = number
       unhealthy_threshold = number
     })
-    stickiness = object({
-      enabled         = bool
-      type            = string
-      cookie_duration = number
-      cookie_name     = string
-    })
-    condition_host_header_values  = list(string)
-    condition_path_pattern_values = list(string)
     aws_route53_record = list(object({
       zone_id = string
       name    = string
