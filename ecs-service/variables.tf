@@ -141,7 +141,7 @@ variable "deployment_percent" {
 variable "load_balancer" {
   description = "Target groups to create and attach to the load balancer"
   type = object({
-    listener_arn                  = string
+    loadbalancer_arn              = string
     load_balancing_algorithm_type = string
     deregistration_delay          = number
     container_port                = number

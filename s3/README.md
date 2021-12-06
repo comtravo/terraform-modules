@@ -6,7 +6,19 @@ No requirements.
 
 | Name | Version |
 |------|---------|
-| aws | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+
+## Modules
+
+No modules.
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [aws_s3_bucket.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket) | resource |
+| [aws_s3_bucket_ownership_controls.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_ownership_controls) | resource |
+| [aws_s3_bucket_public_access_block.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
 
 ## Inputs
 
@@ -25,6 +37,6 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
-| aws\_s3\_bucket\_ownership\_controls | S3 bucket output |
-| aws\_s3\_bucket\_public\_access\_block | S3 bucket output |
-| bucket | S3 bucket output |
+| <a name="output_aws_s3_bucket_ownership_controls"></a> [aws\_s3\_bucket\_ownership\_controls](#output\_aws\_s3\_bucket\_ownership\_controls) | S3 bucket output |
+| <a name="output_aws_s3_bucket_public_access_block"></a> [aws\_s3\_bucket\_public\_access\_block](#output\_aws\_s3\_bucket\_public\_access\_block) | S3 bucket output |
+| <a name="output_bucket"></a> [bucket](#output\_bucket) | S3 bucket output |

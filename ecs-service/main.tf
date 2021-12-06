@@ -1,4 +1,4 @@
-resource "aws_ecs_task_definition" "service" {
+resource "aws_ecs_task_definition" "this" {
   family                = var.name
   container_definitions = var.container_definitions
   task_role_arn         = var.task_role_arn
@@ -36,7 +36,7 @@ resource "aws_iam_role" "ecs_service_role" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_service_role" {
+resource "aws_iam_role_policy_attachment" "ecs_service_linked_role" {
   role       = aws_iam_role.ecs_service_role.id
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
 }
@@ -47,7 +47,7 @@ resource "aws_ecs_service" "service" {
   task_definition                    = aws_ecs_task_definition.service.arn
   launch_type                        = var.launch_type
   desired_count                      = var.capacity.desired
-  iam_role                           = aws_iam_role.eecs_service_role.arn
+  iam_role                           = aws_iam_role.ecs_service_role.arn
   deployment_maximum_percent         = var.deployment_percent.max_percent
   deployment_minimum_healthy_percent = var.deployment_percent.min_healthy_percent
   force_new_deployment               = var.force_new_deployment
@@ -74,13 +74,10 @@ resource "aws_ecs_service" "service" {
 
   tags = var.tags
 
-  dynamic "load_balancer" {
-    for_each = var.load_balancer != null ? [var.load_balancer] : []
-    content {
-      target_group_arn = aws_lb_target_group.service[load_balancer.key].arn
-      container_name   = var.name
-      container_port   = load_balancer.value.container_port
-    }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.service.arn
+    container_name   = var.name
+    container_port   = var.load_balancer.container_port
   }
 
   lifecycle {
@@ -89,29 +86,27 @@ resource "aws_ecs_service" "service" {
 }
 
 resource "aws_lb_target_group" "service" {
-  for_each = var.load_balancer != null ? [var.load_balancer] : []
-
   name                          = var.name
-  port                          = each.value.container_port
-  protocol                      = each.value.protocol
+  port                          = var.load_balancer.container_port
+  protocol                      = var.load_balancer.protocol
   vpc_id                        = var.vpc_id
-  deregistration_delay          = each.value.deregistration_delay
-  load_balancing_algorithm_type = each.value.load_balancing_algorithm_type
+  deregistration_delay          = var.load_balancer.deregistration_delay
+  load_balancing_algorithm_type = var.load_balancer.load_balancing_algorithm_type
 
   health_check {
-    enabled             = each.value.health_check.enabled
-    healthy_threshold   = each.value.health_check.healthy_threshold
-    unhealthy_threshold = each.value.health_check.unhealthy_threshold
-    matcher             = each.value.health_check.matcher
-    interval            = each.value.health_check.interval
-    path                = each.value.health_check.path
-    port                = each.value.health_check.port
-    protocol            = each.value.health_check.protocol
-    timeout             = each.value.health_check.timeout
+    enabled             = var.load_balancer.health_check.enabled
+    healthy_threshold   = var.load_balancer.health_check.healthy_threshold
+    unhealthy_threshold = var.load_balancer.health_check.unhealthy_threshold
+    matcher             = var.load_balancer.health_check.matcher
+    interval            = var.load_balancer.health_check.interval
+    path                = var.load_balancer.health_check.path
+    port                = var.load_balancer.health_check.port
+    protocol            = var.load_balancer.health_check.protocol
+    timeout             = var.load_balancer.health_check.timeout
   }
 
   dynamic "stickiness" {
-    for_each = each.value.stickiness != null ? [each.value.stickiness] : []
+    for_each = var.load_balancer.stickiness != null ? [var.load_balancer.stickiness] : []
     content {
       type            = stickiness.value.type
       enabled         = stickiness.value.enabled
@@ -123,33 +118,27 @@ resource "aws_lb_target_group" "service" {
   tags = var.tags
 }
 
+resource "aws_lb_listener" "service" {
+  load_balancer_arn = var.load_balancer.loadbalancer_arn
+  port              = var.load_balancer.container_port
+  protocol          = var.load_balancer.protocol
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.service.arn
+  }
+
+  tags = var.tags
+}
+
 resource "aws_lb_listener_rule" "service" {
   for_each = aws_lb_target_group.service
 
-  listener_arn = var.load_balancers[each.key].listener_arn
+  listener_arn = aws_lb_listener.service.arn
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.service[each.key].arn
-  }
-
-
-  dynamic "condition" {
-    for_each = each.value.condition_host_header_values != null ? [each.value.condition_host_header_values] : []
-    content {
-      host_header {
-        values = condition.value
-      }
-    }
-  }
-
-  dynamic "condition" {
-    for_each = each.value.condition_path_pattern_values != null ? [each.value.condition_path_pattern_values] : []
-    content {
-      path_pattern {
-        values = condition.value
-      }
-    }
+    target_group_arn = aws_lb_target_group.service.arn
   }
 
   tags = var.tags
@@ -172,4 +161,9 @@ resource "aws_route53_record" "this" {
 output "target_group" {
   value       = aws_lb_target_group.service
   description = "LB target group attributes"
+}
+
+output "aws_lb_listener" {
+  value       = aws_lb_listener.service
+  description = "LB listener attributes"
 }
