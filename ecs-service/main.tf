@@ -105,8 +105,8 @@ resource "aws_lb_target_group" "service" {
   }
 
   stickiness {
-    type            = "source_ip"
-    enabled         = true
+    type    = "source_ip"
+    enabled = true
   }
 
   tags = var.tags
