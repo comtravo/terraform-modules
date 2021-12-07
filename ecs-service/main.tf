@@ -133,11 +133,17 @@ resource "aws_lb_listener_rule" "service" {
     target_group_arn = aws_lb_target_group.service.arn
   }
 
+  condition {
+    host_header {
+      values = [for record in var.load_balancer.aws_route53_records : record.name]
+    }
+  }
+
   tags = var.tags
 }
 
 resource "aws_route53_record" "this" {
-  for_each = var.load_balancer.aws_route53_record
+  for_each = var.load_balancer.aws_route53_records
 
   zone_id = each.value.zone_id
   name    = each.value.name

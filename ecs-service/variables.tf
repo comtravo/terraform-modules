@@ -154,7 +154,7 @@ variable "load_balancer" {
       timeout             = number
       unhealthy_threshold = number
     })
-    aws_route53_record = list(object({
+    aws_route53_records = list(object({
       zone_id = string
       name    = string
       type    = string
