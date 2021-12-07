@@ -124,10 +124,7 @@ resource "aws_lb_listener" "service" {
 }
 
 resource "aws_lb_listener_rule" "service" {
-  for_each = aws_lb_target_group.service
-
   listener_arn = aws_lb_listener.service.arn
-
   action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.service.arn
