@@ -143,7 +143,7 @@ resource "aws_lb_listener_rule" "service" {
 }
 
 resource "aws_route53_record" "this" {
-  for_each = var.load_balancer.aws_route53_records
+  for_each = toset(var.load_balancer.aws_route53_records)
 
   zone_id = each.value.zone_id
   name    = each.value.name
