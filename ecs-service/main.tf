@@ -150,9 +150,9 @@ resource "aws_route53_record" "this" {
   type    = each.value.type
 
   alias {
-    name                   = each.value.alias_name
-    zone_id                = each.value.alias_zone_id
-    evaluate_target_health = each.value.evaluate_target_health
+    name                   = each.value.alias.name
+    zone_id                = each.value.alias.zone_id
+    evaluate_target_health = each.value.alias.evaluate_target_health
   }
 }
 
