@@ -91,7 +91,6 @@ resource "aws_lb_target_group" "service" {
   protocol                      = var.load_balancer.protocol
   vpc_id                        = var.vpc_id
   deregistration_delay          = var.load_balancer.deregistration_delay
-  load_balancing_algorithm_type = var.load_balancer.load_balancing_algorithm_type
 
   health_check {
     healthy_threshold   = var.load_balancer.health_check.healthy_threshold

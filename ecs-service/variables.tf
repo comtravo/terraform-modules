@@ -142,7 +142,6 @@ variable "load_balancer" {
   description = "Target groups to create and attach to the load balancer"
   type = object({
     load_balancer_arn             = string
-    load_balancing_algorithm_type = string
     deregistration_delay          = number
     container_port                = number
     protocol                      = string
