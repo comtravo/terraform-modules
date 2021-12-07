@@ -113,7 +113,7 @@ resource "aws_lb_target_group" "service" {
 }
 
 resource "aws_lb_listener" "service" {
-  load_balancer_arn = var.load_balancer.loadbalancer_arn
+  load_balancer_arn = var.load_balancer.load_balancer_arn
   port              = var.load_balancer.container_port
   protocol          = var.load_balancer.protocol
 
