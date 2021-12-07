@@ -96,9 +96,7 @@ resource "aws_lb_target_group" "service" {
   health_check {
     healthy_threshold   = var.load_balancer.health_check.healthy_threshold
     unhealthy_threshold = var.load_balancer.health_check.unhealthy_threshold
-    matcher             = var.load_balancer.health_check.matcher
     interval            = var.load_balancer.health_check.interval
-    path                = var.load_balancer.health_check.path
     port                = var.load_balancer.health_check.port
     protocol            = var.load_balancer.health_check.protocol
     timeout             = var.load_balancer.health_check.timeout
