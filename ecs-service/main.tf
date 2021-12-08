@@ -86,11 +86,11 @@ resource "aws_ecs_service" "service" {
 }
 
 resource "aws_lb_target_group" "service" {
-  name                          = var.name
-  port                          = var.load_balancer.container_port
-  protocol                      = var.load_balancer.protocol
-  vpc_id                        = var.vpc_id
-  deregistration_delay          = var.load_balancer.deregistration_delay
+  name                 = var.name
+  port                 = var.load_balancer.container_port
+  protocol             = var.load_balancer.protocol
+  vpc_id               = var.vpc_id
+  deregistration_delay = var.load_balancer.deregistration_delay
 
   health_check {
     healthy_threshold   = var.load_balancer.health_check.healthy_threshold
@@ -122,24 +122,8 @@ resource "aws_lb_listener" "service" {
   tags = var.tags
 }
 
-resource "aws_lb_listener_rule" "service" {
-  listener_arn = aws_lb_listener.service.arn
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.service.arn
-  }
-
-  condition {
-    host_header {
-      values = [for record in var.load_balancer.aws_route53_records : record.name]
-    }
-  }
-
-  tags = var.tags
-}
-
 resource "aws_route53_record" "this" {
-  for_each = {for record in var.load_balancer.aws_route53_records: record.name => record}
+  for_each = { for record in var.load_balancer.aws_route53_records : record.name => record }
 
   zone_id = each.value.zone_id
   name    = each.value.name

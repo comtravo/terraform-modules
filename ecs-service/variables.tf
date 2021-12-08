@@ -141,10 +141,10 @@ variable "deployment_percent" {
 variable "load_balancer" {
   description = "Target groups to create and attach to the load balancer"
   type = object({
-    load_balancer_arn             = string
-    deregistration_delay          = number
-    container_port                = number
-    protocol                      = string
+    load_balancer_arn    = string
+    deregistration_delay = number
+    container_port       = number
+    protocol             = string
     health_check = object({
       healthy_threshold   = number
       interval            = number
