@@ -1,20 +1,17 @@
 variable "name" {
+  description = "Name of the ECS service"
   type        = string
-  description = "ECS service name"
 }
 
-variable "region" {
+variable "cluster_name" {
+  description = "Name of the ECS cluster"
   type        = string
-  description = "AWS region"
 }
 
-variable "cluster_id" {
+variable "launch_type" {
+  description = "ECS service launch type"
   type        = string
-  description = "ECS cluster id"
-}
-
-locals {
-  cluster_name = element(split("/", var.cluster_id), 1)
+  default     = "EC2"
 }
 
 variable "vpc_id" {
@@ -22,109 +19,50 @@ variable "vpc_id" {
   description = "VPC id"
 }
 
-variable "load_balancing_algorithm_type" {
-  type        = string
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_target_group#load_balancing_algorithm_type"
-  default     = "least_outstanding_requests"
-}
-
-variable "environment" {
-  type        = string
-  description = "Environment"
-}
-
-variable "ecs_autoscaling_service_linked_role" {
-  default     = ""
-  type        = string
-  description = "ECS autoscaling service linked role"
-}
-
-variable "enable" {
-  default     = true
-  type        = bool
-  description = "Enable module"
-}
-
 variable "network_mode" {
   default     = "bridge"
   type        = string
-  description = "Service network mode"
+  description = "ECS service network mode"
 }
 
-variable "container_definition" {
+variable "container_definitions" {
   type        = string
   description = "ECS container definition"
 }
 
-variable "capacity" {
-  type = object({
-    min            = number
-    max            = number
-    desired        = number
-    enable_scaling = bool
-    target_value   = number
-  })
-  description = "ECS service capacity"
+variable "task_role_arn" {
+  type        = string
+  description = "ECS task role arn"
 }
 
-variable "min_healthy_percent" {
+variable "execution_role_arn" {
   default     = null
-  type        = number
-  description = "Minimum healthy percentage"
+  type        = string
+  description = "ECS task execution role arn"
 }
 
-variable "max_healthy_percent" {
-  default     = null
-  type        = number
-  description = "Maximum healthy percentage"
+variable "force_new_deployment" {
+  type        = bool
+  default     = false
+  description = "Force new deployment"
 }
 
-# list of maps hack
-variable "alb" {
-  type = list(object({
-    pattern      = string
-    listener_arn = string
-  }))
-  default     = []
-  description = "ECS service ALB configuration"
+variable "enable_ecs_managed_tags" {
+  type        = bool
+  default     = true
+  description = "Enable ECS managed tags"
 }
 
-variable "port_mappings" {
-  type = list(object({
-    hostPort      = number
-    containerPort = number
-    protocol      = string
-  }))
-  default     = []
-  description = "ECS port mappings"
+variable "wait_for_steady_state" {
+  type        = bool
+  default     = true
+  description = "Wait for services to be stable"
 }
 
-# https://github.com/hashicorp/terraform/issues/13980#issuecomment-297605688
-# Terraform core issue
-variable "alb_listener_count" {
-  default     = 0
-  type        = number
-  description = "Number of ALB load balancers"
-}
-
-variable "route53_count" {
-  default     = 0
-  type        = number
-  description = "Number of R53 records"
-}
-
-# list of maps hack
-variable "route53" {
-  type = list(object({
-    zone_id                = string
-    name                   = string
-    type                   = string
-    alias_name             = string
-    alias_zone_id          = string
-    evaluate_target_health = bool
-  }))
-  default     = []
-  description = "ECS service R53 configuration"
+variable "propagate_tags" {
+  type        = string
+  default     = "SERVICE"
+  description = "propogate tags from"
 }
 
 variable "volumes" {
@@ -136,23 +74,19 @@ variable "volumes" {
   description = "ECS task volumes"
 }
 
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "ECS tags"
+}
+
 variable "placement_constraints" {
   type = list(object({
     type       = string
     expression = string
   }))
   default     = []
-  description = "ECS service contraints"
-}
-
-variable "scheduling_strategy" {
-  default = "REPLICA"
-  type    = string
-}
-
-variable "load_balancer" {
-  default = ""
-  type    = string
+  description = "ECS service placement contraints"
 }
 
 variable "placement_strategy" {
@@ -175,40 +109,59 @@ variable "placement_strategy" {
   ]
 }
 
-variable "task_role_arn" {
+variable "scheduling_strategy" {
+  default     = "REPLICA"
   type        = string
-  description = "task role arn"
+  description = "ECS service scheduling strategy"
 }
 
-variable "execution_role_arn" {
-  default     = null
-  type        = string
-  description = "task execution role arn"
-}
-
-variable "health_check" {
-  type    = map(string)
-  default = {}
-}
-
-variable "deregistration_delay" {
-  default     = 60
-  type        = number
-  description = "Deregistration delay"
-}
-
-variable "ecs_stability_check_config" {
-  description = "Configuration to wait for a service to be stable"
+variable "capacity" {
   type = object({
-    role     = string
-    timeout  = number
-    interval = number
+    min            = number
+    max            = number
+    desired        = number
+    enable_scaling = bool
+    target_value   = number
   })
+  description = "ECS service capacity"
 }
 
+variable "deployment_percent" {
+  type = object({
+    max_percent         = number
+    min_healthy_percent = number
+  })
+  description = "ECS deployment healthy percentage"
+  default = {
+    max_percent         = 100
+    min_healthy_percent = 0
+  }
+}
 
-variable "force_new_deployment" {
-  type        = bool
-  default     = false
-  description = "Force new deployment"
+variable "load_balancer" {
+  description = "Target groups to create and attach to the load balancer"
+  type = object({
+    load_balancer_arn    = string
+    deregistration_delay = number
+    container_port       = number
+    protocol             = string
+    health_check = object({
+      healthy_threshold   = number
+      interval            = number
+      port                = number
+      protocol            = string
+      timeout             = number
+      unhealthy_threshold = number
+    })
+    aws_route53_records = list(object({
+      zone_id = string
+      name    = string
+      type    = string
+      alias = object({
+        name                   = string
+        zone_id                = string
+        evaluate_target_health = bool
+      })
+    }))
+  })
 }
