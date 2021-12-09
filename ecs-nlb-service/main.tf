@@ -136,7 +136,7 @@ resource "aws_lb_listener" "service" {
 }
 
 resource "aws_route53_record" "this" {
-  for_each = { for record in var.load_balancer.aws_route53_records : record.name => record }
+  for_each = coalescelist([ for lb in var.load_balancer: lb.aws_route53_records ])
 
   zone_id = each.value.zone_id
   name    = each.value.name
