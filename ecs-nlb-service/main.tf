@@ -97,7 +97,7 @@ resource "aws_ecs_service" "service" {
 resource "aws_lb_target_group" "service" {
   for_each = var.load_balancer
 
-  name_prefix          = var.name
+  name                 = "${var.name}-${each.key}"
   port                 = each.value.container_port
   protocol             = each.value.protocol
   vpc_id               = var.vpc_id
