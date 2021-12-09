@@ -153,15 +153,19 @@ variable "load_balancer" {
       timeout             = number
       unhealthy_threshold = number
     })
-    aws_route53_records = list(object({
-      zone_id = string
-      name    = string
-      type    = string
-      alias = object({
-        name                   = string
-        zone_id                = string
-        evaluate_target_health = bool
-      })
-    }))
   }))
+}
+
+variable "aws_route53_records" {
+  type = list(object({
+    zone_id = string
+    name    = string
+    type    = string
+    alias = object({
+      name                   = string
+      zone_id                = string
+      evaluate_target_health = bool
+    })
+  }))
+  description = "Route53 records to create"
 }
