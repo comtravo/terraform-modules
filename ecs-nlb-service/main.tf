@@ -74,10 +74,19 @@ resource "aws_ecs_service" "service" {
 
   tags = var.tags
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.service.arn
-    container_name   = var.name
-    container_port   = var.load_balancer.container_port
+  # load_balancer {
+  #   target_group_arn = aws_lb_target_group.service.arn
+  #   container_name   = var.name
+  #   container_port   = var.load_balancer.container_port
+  # }
+
+  dynamic "load_balancer" {
+    for_each = var.load_balancer
+    content {
+      target_group_arn = aws_lb_target_group.service[load_balancer.key].arn
+      container_name   = var.name
+      container_port   = load_balancer.value.container_port
+    }
   }
 
   lifecycle {
@@ -86,19 +95,21 @@ resource "aws_ecs_service" "service" {
 }
 
 resource "aws_lb_target_group" "service" {
-  name                 = var.name
-  port                 = var.load_balancer.container_port
-  protocol             = var.load_balancer.protocol
+  for_each = var.load_balancer
+
+  name_prefix          = var.name
+  port                 = each.value.container_port
+  protocol             = each.value.protocol
   vpc_id               = var.vpc_id
-  deregistration_delay = var.load_balancer.deregistration_delay
+  deregistration_delay = each.value.deregistration_delay
 
   health_check {
-    healthy_threshold   = var.load_balancer.health_check.healthy_threshold
-    unhealthy_threshold = var.load_balancer.health_check.unhealthy_threshold
-    interval            = var.load_balancer.health_check.interval
-    port                = var.load_balancer.health_check.port
-    protocol            = var.load_balancer.health_check.protocol
-    timeout             = var.load_balancer.health_check.timeout
+    healthy_threshold   = each.value.health_check.healthy_threshold
+    unhealthy_threshold = each.value.health_check.unhealthy_threshold
+    interval            = each.value.health_check.interval
+    port                = each.value.health_check.port
+    protocol            = each.value.health_check.protocol
+    timeout             = each.value.health_check.timeout
   }
 
   stickiness {
@@ -110,13 +121,15 @@ resource "aws_lb_target_group" "service" {
 }
 
 resource "aws_lb_listener" "service" {
-  load_balancer_arn = var.load_balancer.load_balancer_arn
-  port              = var.load_balancer.container_port
-  protocol          = var.load_balancer.protocol
+  for_each = var.load_balancer
+
+  load_balancer_arn = each.value.load_balancer_arn
+  port              = each.value.container_port
+  protocol          = each.value.protocol
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.service.arn
+    target_group_arn = aws_lb_target_group.service[each.key].arn
   }
 
   tags = var.tags

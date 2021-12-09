@@ -140,7 +140,7 @@ variable "deployment_percent" {
 
 variable "load_balancer" {
   description = "Target groups to create and attach to the load balancer"
-  type = object({
+  type = map(object({
     load_balancer_arn    = string
     deregistration_delay = number
     container_port       = number
@@ -163,5 +163,5 @@ variable "load_balancer" {
         evaluate_target_health = bool
       })
     }))
-  })
+  }))
 }
