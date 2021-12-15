@@ -16,39 +16,12 @@ resource "aws_ecs_task_definition" "this" {
   tags = var.tags
 }
 
-# resource "aws_iam_role" "ecs_service_role" {
-#   name                  = "${var.name}-ecs-service-role"
-#   path                  = "/environment/${terraform.workspace}/"
-#   force_detach_policies = true
-
-#   assume_role_policy = <<EOF
-# {
-#   "Version": "2008-10-17",
-#   "Statement": [
-#     {
-#       "Action": "sts:AssumeRole",
-#       "Principal": {
-#         "Service": ["ecs.amazonaws.com"]
-#       },
-#       "Effect": "Allow"
-#     }
-#   ]
-# }
-# EOF
-# }
-
-# resource "aws_iam_role_policy_attachment" "ecs_service_linked_role" {
-#   role       = aws_iam_role.ecs_service_role.id
-#   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
-# }
-
 resource "aws_ecs_service" "service" {
   name                               = var.name
   cluster                            = var.cluster_name
   task_definition                    = aws_ecs_task_definition.this.arn
   launch_type                        = var.launch_type
   desired_count                      = var.capacity.desired
-  # iam_role                           = aws_iam_role.ecs_service_role.arn
   deployment_maximum_percent         = var.deployment_percent.max_percent
   deployment_minimum_healthy_percent = var.deployment_percent.min_healthy_percent
   force_new_deployment               = var.force_new_deployment
