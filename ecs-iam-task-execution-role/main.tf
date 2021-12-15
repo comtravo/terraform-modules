@@ -1,14 +1,14 @@
 variable "name" {
   description = "Name of the IAM role"
-  type        = "string"
+  type        = string
 }
 
 
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
-data "aws_kms_alias" "ssm" {
-  name = "alias/aws/ssm"
+data "aws_kms_key" "ssm" {
+  key_id = "alias/aws/ssm"
 }
 
 output "role" {
