@@ -18,6 +18,7 @@ resource "aws_ecs_task_definition" "this" {
 
 resource "aws_iam_role" "ecs_service_role" {
   name                  = "${var.name}-ecs-service-role"
+  path                  = "/environment/${terraform.workspace}/"
   force_detach_policies = true
 
   assume_role_policy = <<EOF
