@@ -40,7 +40,6 @@ No modules.
 | <a name="input_container_definition"></a> [container\_definition](#input\_container\_definition) | ECS container definition | `string` | n/a | yes |
 | <a name="input_deregistration_delay"></a> [deregistration\_delay](#input\_deregistration\_delay) | Deregistration delay | `number` | `60` | no |
 | <a name="input_ecs_autoscaling_service_linked_role"></a> [ecs\_autoscaling\_service\_linked\_role](#input\_ecs\_autoscaling\_service\_linked\_role) | ECS autoscaling service linked role | `string` | `""` | no |
-| <a name="input_ecs_stability_check_config"></a> [ecs\_stability\_check\_config](#input\_ecs\_stability\_check\_config) | Configuration to wait for a service to be stable | <pre>object({<br>    role     = string<br>    timeout  = number<br>    interval = number<br>  })</pre> | n/a | yes |
 | <a name="input_enable"></a> [enable](#input\_enable) | Enable module | `bool` | `true` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment | `string` | n/a | yes |
 | <a name="input_execution_role_arn"></a> [execution\_role\_arn](#input\_execution\_role\_arn) | task execution role arn | `string` | `null` | no |

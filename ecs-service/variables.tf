@@ -197,15 +197,6 @@ variable "deregistration_delay" {
   description = "Deregistration delay"
 }
 
-variable "ecs_stability_check_config" {
-  description = "Configuration to wait for a service to be stable"
-  type = object({
-    role     = string
-    timeout  = number
-    interval = number
-  })
-}
-
 
 variable "force_new_deployment" {
   type        = bool
