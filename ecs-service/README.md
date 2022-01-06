@@ -64,4 +64,6 @@ No modules.
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_aws_alb_target_group"></a> [aws\_alb\_target\_group](#output\_aws\_alb\_target\_group) | ALB Target Group configuration |
