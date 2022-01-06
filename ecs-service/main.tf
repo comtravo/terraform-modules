@@ -223,3 +223,8 @@ resource "aws_route53_record" "internal" {
   }
 }
 
+
+output "aws_alb_target_group" {
+  value       = try(aws_alb_target_group.service[0], {})
+  description = "ALB Target Group configuration"
+}
