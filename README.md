@@ -81,6 +81,9 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_arn"></a> [arn](#output\_arn) | AWS ALB ARN |
+| <a name="output_aws_alb"></a> [aws\_alb](#output\_aws\_alb) | AWS ALB attributes |
+| <a name="output_aws_alb_listener_http"></a> [aws\_alb\_listener\_http](#output\_aws\_alb\_listener\_http) | AWS ALB HTTPS listener attributes |
+| <a name="output_aws_alb_listener_https"></a> [aws\_alb\_listener\_https](#output\_aws\_alb\_listener\_https) | AWS ALB HTTPS listener attributes |
 | <a name="output_default_target_group_http"></a> [default\_target\_group\_http](#output\_default\_target\_group\_http) | Default HTTP target group arn |
 | <a name="output_default_target_group_https"></a> [default\_target\_group\_https](#output\_default\_target\_group\_https) | Default HTTPS target group arn |
 | <a name="output_dns_name"></a> [dns\_name](#output\_dns\_name) | AWS ALB DNS name |
