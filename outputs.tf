@@ -38,3 +38,18 @@ output "default_target_group_https" {
   value       = element(concat(aws_alb_target_group.dummy_https.*.arn, [""]), 0)
 }
 
+output "aws_alb_listener_https" {
+  value       = try(aws_alb_listener.listener_https[0], {})
+  description = "AWS ALB HTTPS listener attributes"
+}
+
+output "aws_alb_listener_http" {
+  value       = try(aws_alb_listener.listener_http[0], {})
+  description = "AWS ALB HTTPS listener attributes"
+}
+
+output "aws_alb" {
+  value       = try(aws_alb.alb[0], {})
+  description = "AWS ALB attributes"
+}
+
