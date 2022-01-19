@@ -14,10 +14,6 @@ variable "image_tag" {
   type        = string
 }
 
-data "aws_ecr_repository" "service" {
-  name = var.repository_name
-}
-
 data "aws_ecr_image" "service_image" {
   registry_id     = var.registry_id
   repository_name = var.repository_name
