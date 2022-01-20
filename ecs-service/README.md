@@ -68,3 +68,4 @@ No modules.
 |------|-------------|
 | <a name="output_aws_alb_target_group"></a> [aws\_alb\_target\_group](#output\_aws\_alb\_target\_group) | ALB Target Group configuration |
 | <a name="output_capacity"></a> [capacity](#output\_capacity) | Capacity configuration |
+| <a name="output_name"></a> [name](#output\_name) | ECS service name |
