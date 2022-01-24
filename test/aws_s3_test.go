@@ -131,7 +131,7 @@ func TestS3_lifecycleRulesExpiration(t *testing.T) {
 			"noncurrent_version_expiration": []map[string]interface{}(nil),
 			"noncurrent_version_transition": []map[string]interface{}(nil),
 			"prefix":                        "prefix1",
-			"tags":                          map[string]interface{}{},
+			"tags":                          interface{}(nil),
 			"transition":                    []map[string]interface{}(nil),
 		},
 	}
@@ -164,7 +164,7 @@ func TestS3_lifecycleRulesTransition(t *testing.T) {
 			"noncurrent_version_expiration":          []map[string]interface{}(nil),
 			"noncurrent_version_transition":          []map[string]interface{}(nil),
 			"prefix":                                 "prefix1",
-			"tags":                                   map[string]interface{}{},
+			"tags":                                   interface{}(nil),
 			"transition": []map[string]interface{}{
 				{
 					"days":          7,
