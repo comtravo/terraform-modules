@@ -13,29 +13,29 @@ func TestAPIG_basic(t *testing.T) {
 	t.Parallel()
 
 	apigName := fmt.Sprintf("apig-%s", random.UniqueId())
-	exampleDir := "../examples/basic/"
+	exampleDir := "../apig/examples/basic/"
 
-	terraformOptions := SetupExample(t, apigName, exampleDir)
+	terraformOptions := APIGTerraformModuleSetupExample(t, apigName, exampleDir)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
-	TerraformApplyAndValidateOutputs(t, terraformOptions)
+	APIGTerraformModuleTerraformApplyAndValidateOutputs(t, terraformOptions)
 }
 
 func TestAPIG_lambda(t *testing.T) {
 	t.Parallel()
 
 	apigName := fmt.Sprintf("apig-%s", random.UniqueId())
-	exampleDir := "../examples/lambda/"
+	exampleDir := "../apig/examples/lambda/"
 
-	terraformOptions := SetupExample(t, apigName, exampleDir)
+	terraformOptions := APIGTerraformModuleSetupExample(t, apigName, exampleDir)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
-	TerraformApplyAndValidateOutputs(t, terraformOptions)
+	APIGTerraformModuleTerraformApplyAndValidateOutputs(t, terraformOptions)
 }
 
-func SetupExample(t *testing.T, apigName string, exampleDir string) *terraform.Options {
+func APIGTerraformModuleSetupExample(t *testing.T, apigName string, exampleDir string) *terraform.Options {
 	terraformOptions := &terraform.Options{
 		TerraformDir: exampleDir,
 		EnvVars: map[string]string{
@@ -48,7 +48,7 @@ func SetupExample(t *testing.T, apigName string, exampleDir string) *terraform.O
 	return terraformOptions
 }
 
-func TerraformApplyAndValidateOutputs(t *testing.T, terraformOptions *terraform.Options) {
+func APIGTerraformModuleTerraformApplyAndValidateOutputs(t *testing.T, terraformOptions *terraform.Options) {
 	terraformApplyOutput := terraform.InitAndApply(t, terraformOptions)
 	resourceCount := terraform.GetResourceCount(t, terraformApplyOutput)
 

@@ -1,4 +1,4 @@
-package testS3
+package test
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ func TestS3_disabled(t *testing.T) {
 	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
 	exampleDir := "../s3/examples/disabled/"
 
-	terraformOptions := SetupExample(t, name, exampleDir, nil)
+	terraformOptions := S3TerraformModuleSetupExample(t, name, exampleDir, nil)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
@@ -35,11 +35,11 @@ func TestS3_basic(t *testing.T) {
 	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
 	exampleDir := "../s3/examples/basic/"
 
-	terraformOptions := SetupExample(t, name, exampleDir, nil)
+	terraformOptions := S3TerraformModuleSetupExample(t, name, exampleDir, nil)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
-	TerraformApplyAndValidateBasicOutputs(t, terraformOptions)
+	S3TerraformModuleTerraformApplyAndValidateBasicOutputs(t, terraformOptions)
 
 	awsS3BucketPublicAccessBlock := terraform.OutputMapOfObjects(t, terraformOptions, "aws_s3_bucket_public_access_block")
 	expectedAwsS3BucketPublicAccessBlock := map[string]interface{}(map[string]interface{}{
@@ -59,11 +59,11 @@ func TestS3_versioning(t *testing.T) {
 	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
 	exampleDir := "../s3/examples/versioning/"
 
-	terraformOptions := SetupExample(t, name, exampleDir, nil)
+	terraformOptions := S3TerraformModuleSetupExample(t, name, exampleDir, nil)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
-	TerraformApplyAndValidateBasicOutputs(t, terraformOptions)
+	S3TerraformModuleTerraformApplyAndValidateBasicOutputs(t, terraformOptions)
 
 	bucket := terraform.OutputMapOfObjects(t, terraformOptions, "bucket")
 	expectedVersioningConfiguration := []map[string]interface{}([]map[string]interface{}{
@@ -81,7 +81,7 @@ func TestS3_public(t *testing.T) {
 	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
 	exampleDir := "../s3/examples/public/"
 
-	terraformOptions := SetupExample(t, name, exampleDir, nil)
+	terraformOptions := S3TerraformModuleSetupExample(t, name, exampleDir, nil)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
@@ -108,7 +108,7 @@ func TestS3_lifecycleRulesExpiration(t *testing.T) {
 	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
 	exampleDir := "../s3/examples/lifecycle_rules_expiration/"
 
-	terraformOptions := SetupExample(t, name, exampleDir, nil)
+	terraformOptions := S3TerraformModuleSetupExample(t, name, exampleDir, nil)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
@@ -147,7 +147,7 @@ func TestS3_lifecycleRulesTransition(t *testing.T) {
 	name := fmt.Sprintf("ct-s3-%s", strings.ToLower(random.UniqueId()))
 	exampleDir := "../s3/examples/lifecycle_rules_transition/"
 
-	terraformOptions := SetupExample(t, name, exampleDir, nil)
+	terraformOptions := S3TerraformModuleSetupExample(t, name, exampleDir, nil)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
@@ -180,7 +180,7 @@ func TestS3_lifecycleRulesTransition(t *testing.T) {
 
 }
 
-func SetupExample(t *testing.T, name string, exampleDir string, targets []string) *terraform.Options {
+func S3TerraformModuleSetupExample(t *testing.T, name string, exampleDir string, targets []string) *terraform.Options {
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: exampleDir,
@@ -198,7 +198,7 @@ func SetupExample(t *testing.T, name string, exampleDir string, targets []string
 	return terraformOptions
 }
 
-func TerraformApplyAndValidateBasicOutputs(t *testing.T, terraformOptions *terraform.Options) {
+func S3TerraformModuleTerraformApplyAndValidateBasicOutputs(t *testing.T, terraformOptions *terraform.Options) {
 	terraformApplyOutput := terraform.InitAndApply(t, terraformOptions)
 
 	resourceCount := terraform.GetResourceCount(t, terraformApplyOutput)
