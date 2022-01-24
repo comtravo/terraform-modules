@@ -36,6 +36,7 @@ generate-docs: fmt lint
 clean-state:
 	@find . -type f -name 'terraform.tfstate*' | xargs rm -rf
 	@find . -type d -name '.terraform' | xargs rm -rf
+	@find . -type d -name 'terraform.tfstate.d' | xargs rm -rf
 
 clean-all: clean-state
 	@$(DOCKER_COMPOSE) down -v
