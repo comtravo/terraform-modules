@@ -14,7 +14,7 @@ import (
 func TestFirehoseApply(t *testing.T) {
 
 	terratestOptions := &terraform.Options{
-		TerraformDir: ".",
+		TerraformDir: "../firehose/examples/",
 		Vars:         map[string]interface{}{},
 	}
 
