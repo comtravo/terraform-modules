@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"path"
 	"regexp"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -13,7 +15,6 @@ import (
 )
 
 func TestVPCApplyEnabled_basic(t *testing.T) {
-	// t.Parallel()
 
 	vpc_name := fmt.Sprintf("vpc_enabled-%s", random.UniqueId())
 
@@ -57,7 +58,7 @@ func TestVPCApplyEnabled_basic(t *testing.T) {
 }
 
 func TestVPCApplyEnabled_basicTags(t *testing.T) {
-	// t.Parallel()
+	t.Skip()
 
 	vpc_name := fmt.Sprintf("vpc_enabled-%s", random.UniqueId())
 
@@ -111,7 +112,7 @@ func TestVPCApplyEnabled_basicTags(t *testing.T) {
 }
 
 func TestVPCApplyEnabled_twoAvailabilityZones(t *testing.T) {
-	// t.Parallel()
+	t.Skip()
 
 	vpc_name := fmt.Sprintf("vpc_enabled-%s", random.UniqueId())
 
@@ -155,7 +156,7 @@ func TestVPCApplyEnabled_twoAvailabilityZones(t *testing.T) {
 }
 
 func TestVPCApplyEnabled_differentSubnetConfigurations(t *testing.T) {
-	// t.Parallel()
+	t.Skip()
 
 	vpc_name := fmt.Sprintf("vpc_enabled-%s", random.UniqueId())
 
@@ -200,7 +201,7 @@ func TestVPCApplyEnabled_differentSubnetConfigurations(t *testing.T) {
 }
 
 func TestVPCApplyEnabled_noPublicSubdomain(t *testing.T) {
-	// t.Parallel()
+	t.Skip()
 
 	vpc_name := fmt.Sprintf("vpc_enabled-%s", random.UniqueId())
 
@@ -245,7 +246,7 @@ func TestVPCApplyEnabled_noPublicSubdomain(t *testing.T) {
 }
 
 func TestVPCApplyEnabled_natPerAZ(t *testing.T) {
-	// t.Parallel()
+	t.Skip()
 
 	vpc_name := fmt.Sprintf("vpc_enabled-%s", random.UniqueId())
 
@@ -290,7 +291,7 @@ func TestVPCApplyEnabled_natPerAZ(t *testing.T) {
 }
 
 func TestVPCApplyEnabled_natPerAZInTwoAZ(t *testing.T) {
-	// t.Parallel()
+	t.Skip()
 
 	vpc_name := fmt.Sprintf("vpc_enabled-%s", random.UniqueId())
 
@@ -335,7 +336,7 @@ func TestVPCApplyEnabled_natPerAZInTwoAZ(t *testing.T) {
 }
 
 func TestVPCApplyEnabled_externalElasticIPsNatPerAZ(t *testing.T) {
-	// t.Parallel()
+	t.Skip()
 
 	vpc_name := fmt.Sprintf("vpc_enabled-%s", random.UniqueId())
 
@@ -385,7 +386,7 @@ func TestVPCApplyEnabled_externalElasticIPsNatPerAZ(t *testing.T) {
 }
 
 func TestVPCApplyEnabled_externalElasticIPsLessThanDesiredNATCount(t *testing.T) {
-	// t.Parallel()
+	t.Skip()
 
 	vpc_name := fmt.Sprintf("vpc_enabled-%s", random.UniqueId())
 
@@ -435,7 +436,7 @@ func TestVPCApplyEnabled_externalElasticIPsLessThanDesiredNATCount(t *testing.T)
 }
 
 func TestVPCApplyEnabled_externalElasticIPsSingleNAT(t *testing.T) {
-	// t.Parallel()
+	t.Skip()
 
 	vpc_name := fmt.Sprintf("vpc_enabled-%s", random.UniqueId())
 
@@ -485,7 +486,7 @@ func TestVPCApplyEnabled_externalElasticIPsSingleNAT(t *testing.T) {
 }
 
 func TestVPCApplyDisabled(t *testing.T) {
-	// t.Parallel()
+	t.Skip()
 
 	vpc_name := fmt.Sprintf("vpc_enabled-%s", random.UniqueId())
 
@@ -534,8 +535,13 @@ func VPCTerraformModuleSetupTestCase(t *testing.T, terraformModuleVars map[strin
 	t.Logf("Copied files to test folder: %s", testRunFolder)
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: testRunFolder,
-		Vars:         terraformModuleVars,
+		TerraformDir:       testRunFolder,
+		Vars:               terraformModuleVars,
+		MaxRetries:         20,
+		TimeBetweenRetries: time.Second * 5,
+		RetryableTerraformErrors: map[string]string{
+			".*error reading Route Table*": "Retry transient errors",
+		},
 	}
 	return terraformOptions
 }
@@ -637,7 +643,7 @@ func ValidateVPCRoute53ZoneID(t *testing.T, terraformOptions *terraform.Options)
 	require.NotEqual(t, "", private_zone_id)
 	require.Equal(t, net0ps_zone_id, private_zone_id)
 
-	publicSubdomainRegex := regexp.MustCompile("^[A-Za-z0-9,-_.\\s]+$")
+	publicSubdomainRegex := regexp.MustCompile(`^[A-Za-z0-9,-_.\\s]+$`)
 
 	if terraformOptions.Vars["subdomain"] == "" {
 		publicSubdomainRegex = regexp.MustCompile("^$")
@@ -655,7 +661,7 @@ func ValidateVPCRoute53ZoneName(t *testing.T, terraformOptions *terraform.Option
 	private_subdomain := terraform.Output(t, terraformOptions, "private_subdomain")
 
 	require.Equal(t, terraformOptions.Vars["subdomain"], public_subdomain)
-	require.Equal(t, fmt.Sprintf("%s-net0ps.com", terraformOptions.Vars["vpc_name"]), private_subdomain)
+	require.Equal(t, fmt.Sprintf("%s-net0ps.com", strings.ToLower(terraformOptions.Vars["vpc_name"].(string))), private_subdomain)
 }
 
 func ValidateVPCRoutingTables(t *testing.T, terraformOptions *terraform.Options) {

@@ -17,13 +17,13 @@ build:
 	@$(DOCKER_COMPOSE) build
 
 test-integration:
-	@cd test && go test
+	@cd test && go test $(TESTARGS)
 
 test-all: test-integration
 
 test-docker:
 	@$(DOCKER_COMPOSE) run --rm terraform make lint
-	@$(DOCKER_COMPOSE) run --rm terraform make test-all
+	@$(DOCKER_COMPOSE) run --rm -e TESTARGS='$(TESTARGS)' terraform make test-all
 	@$(DOCKER_COMPOSE) down -v
 
 develop:
