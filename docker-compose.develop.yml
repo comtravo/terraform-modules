@@ -1,9 +1,0 @@
-version: '3'
-
-services:
-  terraform:
-    command: bash
-    volumes:
-      - ./:/go/src/github.com/comtravo/terraform-aws-api-gatewayv2
-    environment:
-      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
