@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFetchParameterStoreArn_basic(t *testing.T) {
+func TestSSMParameterStore_basic(t *testing.T) {
 	t.Parallel()
 
 	workspaceName := strings.ToUpper(fmt.Sprintf("WS_%s", random.UniqueId()))
@@ -25,7 +25,7 @@ func TestFetchParameterStoreArn_basic(t *testing.T) {
 
 	SSMPutParameter(t, expectedParameterName, secretValue)
 
-	exampleDir := "../examples/basic/"
+	exampleDir := "../parameter-store/examples/basic/"
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: exampleDir,
@@ -37,12 +37,12 @@ func TestFetchParameterStoreArn_basic(t *testing.T) {
 
 	terraform.Init(t, terraformOptions)
 	terraform.WorkspaceSelectOrNew(t, terraformOptions, workspaceName)
-	TerraformApplyAndValidateOutputs(t, terraformOptions, expectedParameterName)
+	SSMParameterStoreTerraformApplyAndValidateOutputs(t, terraformOptions, expectedParameterName)
 
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 }
 
-func TestFetchParameterStoreArn_customPrefix(t *testing.T) {
+func TestSSMParameterStore_customPrefix(t *testing.T) {
 	t.Parallel()
 
 	customPrefixName := strings.ToUpper(fmt.Sprintf("PF_%s", random.UniqueId()))
@@ -53,7 +53,7 @@ func TestFetchParameterStoreArn_customPrefix(t *testing.T) {
 
 	SSMPutParameter(t, expectedParameterName, secretValue)
 
-	exampleDir := "../examples/custom_prefix/"
+	exampleDir := "../parameter-store/examples/custom_prefix/"
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: exampleDir,
@@ -64,12 +64,12 @@ func TestFetchParameterStoreArn_customPrefix(t *testing.T) {
 	}
 	defer terraform.Destroy(t, terraformOptions)
 
-	TerraformApplyAndValidateOutputs(t, terraformOptions, expectedParameterName)
+	SSMParameterStoreTerraformApplyAndValidateOutputs(t, terraformOptions, expectedParameterName)
 
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 }
 
-func TestFetchParameterStoreArn_disable(t *testing.T) {
+func TestSSMParameterStore_disable(t *testing.T) {
 	t.Parallel()
 
 	customPrefixName := strings.ToUpper(fmt.Sprintf("PF_%s", random.UniqueId()))
@@ -80,7 +80,7 @@ func TestFetchParameterStoreArn_disable(t *testing.T) {
 
 	SSMPutParameter(t, expectedParameterName, secretValue)
 
-	exampleDir := "../examples/disable/"
+	exampleDir := "../parameter-store/examples/disable/"
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: exampleDir,
@@ -91,7 +91,7 @@ func TestFetchParameterStoreArn_disable(t *testing.T) {
 	}
 	defer terraform.Destroy(t, terraformOptions)
 
-	TerraformApplyAndValidateOutputs(t, terraformOptions, "")
+	SSMParameterStoreTerraformApplyAndValidateOutputs(t, terraformOptions, "")
 
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 }
@@ -120,7 +120,7 @@ func SSMPutParameter(t *testing.T, secretName string, secretValue string) *ssm.P
 	return res
 }
 
-func TerraformApplyAndValidateOutputs(t *testing.T, terraformOptions *terraform.Options, expectedParameterName string) {
+func SSMParameterStoreTerraformApplyAndValidateOutputs(t *testing.T, terraformOptions *terraform.Options, expectedParameterName string) {
 	terraformApplyOutput := terraform.InitAndApply(t, terraformOptions)
 	resourceCount := terraform.GetResourceCount(t, terraformApplyOutput)
 
