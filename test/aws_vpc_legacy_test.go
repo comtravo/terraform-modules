@@ -3,7 +3,9 @@ package test
 import (
 	"fmt"
 	"regexp"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/files"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -28,7 +30,7 @@ func TestLegacyVPCApplyEnabledBasic(t *testing.T) {
 
 	terraformOptions := LegacyVPCSetupTestCase(t, terraformModuleVars)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
-	// defer terraform.Destroy(t, terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
 
 	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 25)
 	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
@@ -63,7 +65,7 @@ func TestLegacyVPCApplyEnabledBasic_tags(t *testing.T) {
 
 	terraformOptions := LegacyVPCSetupTestCase(t, terraformModuleVars)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
-	// defer terraform.Destroy(t, terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
 
 	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 25)
 	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
@@ -87,7 +89,7 @@ func TestLegacyVPCApplyEnabledReplicationFactor(t *testing.T) {
 
 	terraformOptions := LegacyVPCSetupTestCase(t, terraformModuleVars)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
-	// defer terraform.Destroy(t, terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
 
 	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 21)
 	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
@@ -111,7 +113,7 @@ func TestLegacyVPCApplyEnabledSingleAvailabilityZone(t *testing.T) {
 
 	terraformOptions := LegacyVPCSetupTestCase(t, terraformModuleVars)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
-	// defer terraform.Destroy(t, terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
 
 	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 21)
 	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
@@ -135,7 +137,7 @@ func TestLegacyVPCApplyEnabledNoPublicSubdomain(t *testing.T) {
 
 	terraformOptions := LegacyVPCSetupTestCase(t, terraformModuleVars)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
-	// defer terraform.Destroy(t, terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
 
 	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 24)
 	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
@@ -159,7 +161,7 @@ func TestLegacyVPCApplyDisabled_Basic(t *testing.T) {
 
 	terraformOptions := LegacyVPCSetupTestCase(t, terraformModuleVars)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
-	// defer terraform.Destroy(t, terraformOptions)
+	defer terraform.Destroy(t, terraformOptions)
 
 	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 0)
 }
@@ -170,8 +172,13 @@ func LegacyVPCSetupTestCase(t *testing.T, terraformModuleVars map[string]interfa
 	t.Logf("Copied files to test folder: %s", testRunFolder)
 
 	terraformOptions := &terraform.Options{
-		TerraformDir: testRunFolder,
-		Vars:         terraformModuleVars,
+		TerraformDir:       testRunFolder,
+		Vars:               terraformModuleVars,
+		MaxRetries:         20,
+		TimeBetweenRetries: time.Second * 5,
+		RetryableTerraformErrors: map[string]string{
+			".*error reading Route Table*": "Retry transient errors",
+		},
 	}
 	return terraformOptions
 }
@@ -253,7 +260,7 @@ func LegacyVPCValidateVPCRoute53ZoneName(t *testing.T, terraformOptions *terrafo
 	private_subdomain := terraform.Output(t, terraformOptions, "private_subdomain")
 
 	assert.Equal(t, terraformOptions.Vars["subdomain"], public_subdomain)
-	assert.Equal(t, fmt.Sprintf("%s-net0ps.com", terraformOptions.Vars["vpc_name"]), private_subdomain)
+	assert.Equal(t, fmt.Sprintf("%s-net0ps.com", strings.ToLower(terraformOptions.Vars["vpc_name"].(string))), private_subdomain)
 }
 
 func LegacyVPCValidateVPCRoutingTables(t *testing.T, terraformOptions *terraform.Options) {
