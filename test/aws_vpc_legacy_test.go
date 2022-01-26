@@ -2,7 +2,6 @@ package test
 
 import (
 	"fmt"
-	"path"
 	"regexp"
 	"testing"
 
@@ -166,13 +165,9 @@ func TestLegacyVPCApplyDisabled_Basic(t *testing.T) {
 }
 
 func LegacyVPCSetupTestCase(t *testing.T, terraformModuleVars map[string]interface{}) *terraform.Options {
-	testRunFolder, err := files.CopyTerraformFolderToTemp("../", t.Name())
+	testRunFolder, err := files.CopyTerraformFolderToTemp("../vpc-legacy", t.Name())
 	assert.NoError(t, err)
 	t.Logf("Copied files to test folder: %s", testRunFolder)
-
-	localstackCongigDestination := path.Join(testRunFolder, "localstack.tf")
-	files.CopyFile("localstack.tf", localstackCongigDestination)
-	t.Logf("Copied localstack file to: %s", localstackCongigDestination)
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: testRunFolder,
