@@ -27,12 +27,12 @@ func TestLegacyVPCApplyEnabledBasic(t *testing.T) {
 		"replication_factor": 3,
 	}
 
-	terraformOptions := SetupTestCase(t, terraformModuleVars)
+	terraformOptions := LegacyVPCSetupTestCase(t, terraformModuleVars)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	// defer terraform.Destroy(t, terraformOptions)
 
-	TerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 25)
-	ValidateTerraformModuleOutputs(t, terraformOptions)
+	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 25)
+	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
 }
 
 func TestLegacyVPCApplyEnabledBasic_tags(t *testing.T) {
@@ -62,12 +62,12 @@ func TestLegacyVPCApplyEnabledBasic_tags(t *testing.T) {
 		},
 	}
 
-	terraformOptions := SetupTestCase(t, terraformModuleVars)
+	terraformOptions := LegacyVPCSetupTestCase(t, terraformModuleVars)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	// defer terraform.Destroy(t, terraformOptions)
 
-	TerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 25)
-	ValidateTerraformModuleOutputs(t, terraformOptions)
+	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 25)
+	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
 }
 
 func TestLegacyVPCApplyEnabledReplicationFactor(t *testing.T) {
@@ -86,12 +86,12 @@ func TestLegacyVPCApplyEnabledReplicationFactor(t *testing.T) {
 		"replication_factor": 2,
 	}
 
-	terraformOptions := SetupTestCase(t, terraformModuleVars)
+	terraformOptions := LegacyVPCSetupTestCase(t, terraformModuleVars)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	// defer terraform.Destroy(t, terraformOptions)
 
-	TerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 21)
-	ValidateTerraformModuleOutputs(t, terraformOptions)
+	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 21)
+	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
 }
 
 func TestLegacyVPCApplyEnabledSingleAvailabilityZone(t *testing.T) {
@@ -110,12 +110,12 @@ func TestLegacyVPCApplyEnabledSingleAvailabilityZone(t *testing.T) {
 		"replication_factor": 2,
 	}
 
-	terraformOptions := SetupTestCase(t, terraformModuleVars)
+	terraformOptions := LegacyVPCSetupTestCase(t, terraformModuleVars)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	// defer terraform.Destroy(t, terraformOptions)
 
-	TerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 21)
-	ValidateTerraformModuleOutputs(t, terraformOptions)
+	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 21)
+	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
 }
 
 func TestLegacyVPCApplyEnabledNoPublicSubdomain(t *testing.T) {
@@ -134,12 +134,12 @@ func TestLegacyVPCApplyEnabledNoPublicSubdomain(t *testing.T) {
 		"replication_factor": 3,
 	}
 
-	terraformOptions := SetupTestCase(t, terraformModuleVars)
+	terraformOptions := LegacyVPCSetupTestCase(t, terraformModuleVars)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	// defer terraform.Destroy(t, terraformOptions)
 
-	TerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 24)
-	ValidateTerraformModuleOutputs(t, terraformOptions)
+	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 24)
+	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
 }
 
 func TestLegacyVPCApplyDisabled_Basic(t *testing.T) {
@@ -158,14 +158,14 @@ func TestLegacyVPCApplyDisabled_Basic(t *testing.T) {
 		"replication_factor": 3,
 	}
 
-	terraformOptions := SetupTestCase(t, terraformModuleVars)
+	terraformOptions := LegacyVPCSetupTestCase(t, terraformModuleVars)
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	// defer terraform.Destroy(t, terraformOptions)
 
-	TerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 0)
+	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 0)
 }
 
-func SetupTestCase(t *testing.T, terraformModuleVars map[string]interface{}) *terraform.Options {
+func LegacyVPCSetupTestCase(t *testing.T, terraformModuleVars map[string]interface{}) *terraform.Options {
 	testRunFolder, err := files.CopyTerraformFolderToTemp("../", t.Name())
 	assert.NoError(t, err)
 	t.Logf("Copied files to test folder: %s", testRunFolder)
@@ -181,25 +181,25 @@ func SetupTestCase(t *testing.T, terraformModuleVars map[string]interface{}) *te
 	return terraformOptions
 }
 
-func ValidateTerraformModuleOutputs(t *testing.T, terraformOptions *terraform.Options) {
-	ValidateVPC(t, terraformOptions)
+func LegacyVPCValidateTerraformModuleOutputs(t *testing.T, terraformOptions *terraform.Options) {
+	LegacyVPCValidateVPC(t, terraformOptions)
 
-	ValidateVPCDefaultSecurityGroup(t, terraformOptions)
+	LegacyVPCValidateVPCDefaultSecurityGroup(t, terraformOptions)
 
-	ValidateVPCRoute53ZoneID(t, terraformOptions)
-	ValidateVPCRoute53ZoneName(t, terraformOptions)
+	LegacyVPCValidateVPCRoute53ZoneID(t, terraformOptions)
+	LegacyVPCValidateVPCRoute53ZoneName(t, terraformOptions)
 
-	ValidateVPCSubdomainNameServers(t, terraformOptions)
+	LegacyVPCValidateVPCSubdomainNameServers(t, terraformOptions)
 
-	ValidateVPCRoute53ZoneName(t, terraformOptions)
+	LegacyVPCValidateVPCRoute53ZoneName(t, terraformOptions)
 
-	ValidateVPCRoutingTables(t, terraformOptions)
+	LegacyVPCValidateVPCRoutingTables(t, terraformOptions)
 
-	ValidateVPCSubnets(t, terraformOptions)
-	ValidateDependId(t, terraformOptions)
+	LegacyVPCValidateVPCSubnets(t, terraformOptions)
+	LegacyVPCValidateDependId(t, terraformOptions)
 }
 
-func ValidateVPCSubnets(t *testing.T, terraformOptions *terraform.Options) {
+func LegacyVPCValidateVPCSubnets(t *testing.T, terraformOptions *terraform.Options) {
 	private_subnets := terraform.OutputList(t, terraformOptions, "private_subnets")
 	public_subnets := terraform.OutputList(t, terraformOptions, "public_subnets")
 
@@ -208,7 +208,7 @@ func ValidateVPCSubnets(t *testing.T, terraformOptions *terraform.Options) {
 	assert.NotEqual(t, public_subnets, private_subnets)
 }
 
-func ValidateVPCSubdomainNameServers(t *testing.T, terraformOptions *terraform.Options) {
+func LegacyVPCValidateVPCSubdomainNameServers(t *testing.T, terraformOptions *terraform.Options) {
 	publicSubdomainNameServers := terraform.OutputList(t, terraformOptions, "public_subdomain_name_servers")
 
 	if terraformOptions.Vars["subdomain"] == "" {
@@ -219,17 +219,17 @@ func ValidateVPCSubdomainNameServers(t *testing.T, terraformOptions *terraform.O
 
 }
 
-func ValidateVPC(t *testing.T, terraformOptions *terraform.Options) {
+func LegacyVPCValidateVPC(t *testing.T, terraformOptions *terraform.Options) {
 	vpc_id := terraform.Output(t, terraformOptions, "vpc_id")
 	assert.Regexp(t, "vpc-*", vpc_id)
 }
 
-func ValidateVPCDefaultSecurityGroup(t *testing.T, terraformOptions *terraform.Options) {
+func LegacyVPCValidateVPCDefaultSecurityGroup(t *testing.T, terraformOptions *terraform.Options) {
 	vpc_default_sg := terraform.Output(t, terraformOptions, "vpc_default_sg")
 	assert.Regexp(t, "sg-*", vpc_default_sg)
 }
 
-func ValidateVPCRoute53ZoneID(t *testing.T, terraformOptions *terraform.Options) {
+func LegacyVPCValidateVPCRoute53ZoneID(t *testing.T, terraformOptions *terraform.Options) {
 	net0ps_zone_id := terraform.Output(t, terraformOptions, "net0ps_zone_id")
 	private_zone_id := terraform.Output(t, terraformOptions, "private_zone_id")
 
@@ -253,7 +253,7 @@ func ValidateVPCRoute53ZoneID(t *testing.T, terraformOptions *terraform.Options)
 	assert.NotEqual(t, private_zone_id, public_subdomain_zone_id)
 }
 
-func ValidateVPCRoute53ZoneName(t *testing.T, terraformOptions *terraform.Options) {
+func LegacyVPCValidateVPCRoute53ZoneName(t *testing.T, terraformOptions *terraform.Options) {
 	public_subdomain := terraform.Output(t, terraformOptions, "public_subdomain")
 	private_subdomain := terraform.Output(t, terraformOptions, "private_subdomain")
 
@@ -261,7 +261,7 @@ func ValidateVPCRoute53ZoneName(t *testing.T, terraformOptions *terraform.Option
 	assert.Equal(t, fmt.Sprintf("%s-net0ps.com", terraformOptions.Vars["vpc_name"]), private_subdomain)
 }
 
-func ValidateVPCRoutingTables(t *testing.T, terraformOptions *terraform.Options) {
+func LegacyVPCValidateVPCRoutingTables(t *testing.T, terraformOptions *terraform.Options) {
 	vpc_private_routing_table_id := terraform.Output(t, terraformOptions, "vpc_private_routing_table_id")
 	vpc_public_routing_table_id := terraform.Output(t, terraformOptions, "vpc_public_routing_table_id")
 
@@ -270,12 +270,12 @@ func ValidateVPCRoutingTables(t *testing.T, terraformOptions *terraform.Options)
 	assert.NotEqual(t, vpc_private_routing_table_id, vpc_public_routing_table_id)
 }
 
-func ValidateDependId(t *testing.T, terraformOptions *terraform.Options) {
+func LegacyVPCValidateDependId(t *testing.T, terraformOptions *terraform.Options) {
 	depends_id := terraform.Output(t, terraformOptions, "depends_id")
 	assert.NotEqual(t, "", depends_id)
 }
 
-func TerraformApplyAndVerifyResourcesCreated(t *testing.T, terraformOptions *terraform.Options, expectedNumberOfResourcesCreated int) {
+func LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t *testing.T, terraformOptions *terraform.Options, expectedNumberOfResourcesCreated int) {
 	terraform_apply_output := terraform.InitAndApply(t, terraformOptions)
 	assert.Contains(t, terraform_apply_output, fmt.Sprintf("Apply complete! Resources: %d added, 0 changed, 0 destroyed.", expectedNumberOfResourcesCreated))
 }
