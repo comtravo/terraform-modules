@@ -35,18 +35,18 @@ MIT Licensed. See [LICENSE](LICENSE) for full details.
 |------|-------------|------|---------|:--------:|
 | azs | Availability zones | `list(string)` | n/a | yes |
 | cidr | CIDR | `string` | n/a | yes |
-| enable | Enable or Disable the module | `bool` | n/a | yes |
-| environment | Environment | `string` | n/a | yes |
-| replication\_factor | Number of subnets, routing tables, NAT gateways | `number` | n/a | yes |
-| vpc\_name | VPC name | `string` | n/a | yes |
 | depends\_id | For inter module dependencies | `string` | `""` | no |
+| enable | Enable or Disable the module | `bool` | n/a | yes |
 | enable\_dns\_hostnames | Enable DNS hostnames | `bool` | `true` | no |
 | enable\_dns\_support | Enable DNS support | `bool` | `true` | no |
+| environment | Environment | `string` | n/a | yes |
 | nat\_az\_number | Subnet number to deploy NAT gateway in | `number` | `0` | no |
 | private\_subnet\_tags | n/a | `map(string)` | `{}` | no |
 | public\_subnet\_tags | n/a | `map(string)` | `{}` | no |
+| replication\_factor | Number of subnets, routing tables, NAT gateways | `number` | n/a | yes |
 | subdomain | Subdomain name | `string` | `""` | no |
 | tags | n/a | `map(string)` | `{}` | no |
+| vpc\_name | VPC name | `string` | n/a | yes |
 
 ## Outputs
 
@@ -66,4 +66,3 @@ MIT Licensed. See [LICENSE](LICENSE) for full details.
 | vpc\_id | VPC ID |
 | vpc\_private\_routing\_table\_id | Private routing table ID |
 | vpc\_public\_routing\_table\_id | Public routing table ID |
-
