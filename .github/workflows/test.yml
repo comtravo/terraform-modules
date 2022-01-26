@@ -30,6 +30,10 @@ jobs:
             testArgs: -run=TestVPC -timeout=120m
             testFile: test/aws_vpc_test.go
 
+          - module: vpc-legacy
+            testArgs: -run=TestLegacyVPC -timeout=120m
+            testFile: test/aws_vpc_legacy_test.go
+
     steps:
       - id: skip_check
         uses: fkirc/skip-duplicate-actions@master
