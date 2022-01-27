@@ -39,7 +39,7 @@ module "cloudwatch_log_consumer" {
 
   source = "../../"
 
-  file_name     = "${path.module}/../../test/fixtures/foo.zip"
+  file_name     = "${path.module}/../../../test/fixtures/foo.zip"
   function_name = "${var.function_name}-consumer"
   handler       = "index.handler"
   role          = aws_iam_role.lambda.arn
@@ -56,7 +56,7 @@ module "cloudwatch_log_producer" {
 
   source = "../../"
 
-  file_name     = "${path.module}/../../test/fixtures/foo.zip"
+  file_name     = "${path.module}/../../../test/fixtures/foo.zip"
   function_name = "${var.function_name}-producer"
   handler       = "index.handler"
   role          = aws_iam_role.lambda.arn

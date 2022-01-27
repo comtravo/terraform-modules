@@ -45,8 +45,8 @@ resource "aws_s3_bucket" "b" {
 resource "aws_s3_bucket_object" "object" {
   bucket = aws_s3_bucket.b.id
   key    = "foo/bar/baz/foo.zip"
-  source = "${path.module}/../../test/fixtures/foo.zip"
-  etag   = filemd5("${path.module}/../../test/fixtures/foo.zip")
+  source = "${path.module}/../../../test/fixtures/foo.zip"
+  etag   = filemd5("${path.module}/../../../test/fixtures/foo.zip")
 }
 
 

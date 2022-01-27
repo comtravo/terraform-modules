@@ -39,7 +39,7 @@ module "logs" {
 
   source = "../../"
 
-  file_name     = "${path.module}/../../test/fixtures/foo.zip"
+  file_name     = "${path.module}/../../../test/fixtures/foo.zip"
   function_name = var.function_name
   handler       = "index.handler"
   role          = aws_iam_role.lambda.arn

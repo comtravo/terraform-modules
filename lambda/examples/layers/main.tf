@@ -35,7 +35,7 @@ resource "aws_iam_role_policy" "lambda" {
 }
 
 resource "aws_lambda_layer_version" "test" {
-  filename   = "${path.module}/../../test/fixtures/foo.zip"
+  filename   = "${path.module}/../../../test/fixtures/foo.zip"
   layer_name = "foo_layer"
 
   compatible_runtimes = ["nodejs12.x"]
@@ -45,7 +45,7 @@ module "layers" {
 
   source = "../../"
 
-  file_name     = "${path.module}/../../test/fixtures/foo.zip"
+  file_name     = "${path.module}/../../../test/fixtures/foo.zip"
   function_name = var.function_name
   handler       = "index.handler"
   role          = aws_iam_role.lambda.arn
