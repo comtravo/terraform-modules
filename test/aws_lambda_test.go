@@ -1,5 +1,3 @@
-// +build aws
-
 package test
 
 import (
