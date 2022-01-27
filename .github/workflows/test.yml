@@ -6,11 +6,61 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: apig
+            testArgs: -run=TestAPIG
+            testFile: test/aws_apig_test.go
+
+          - module: apigV2
+            testArgs: -run=TestAPIGV2
+            testFile: test/aws_apigv2_test.go
+
+          - module: firehose
+            testArgs: -run=TestFirehose
+            testFile: test/aws_firehose_test.go
+
+          - module: s3
+            testArgs: -run=TestS3
+            testFile: test/aws_s3_test.go
+
+          - module: sfn
+            testArgs: -run=TestSFN
+            testFile: test/aws_sfn_test.go
+
+          - module: vpc
+            testArgs: -run=TestVPC -timeout=120m
+            testFile: test/aws_vpc_test.go
+
+          - module: vpc-legacy
+            testArgs: -run=TestLegacyVPC -timeout=120m
+            testFile: test/aws_vpc_legacy_test.go
+
+          - module: parameter-store
+            testArgs: -run=TestSSMParameterStore
+            testFile: test/aws_ssm_parameter_store_test.go
+
+          - module: lambda
+            testArgs: -run=TestLambda -timeout=60m
+            testFile: test/aws_lambda_test.go
+
     steps:
-      - uses: fkirc/skip-duplicate-actions@master
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          paths: '["${{ matrix.module }}/**", "${{ matrix.testFile }}"]'
+
       - uses: actions/checkout@v2
+        if: ${{ steps.skip_check.outputs.should_skip != 'true' }}
+
       - run: make build
+        if: ${{ steps.skip_check.outputs.should_skip != 'true' }}
+
       - run: make test-docker
+        if: ${{ steps.skip_check.outputs.should_skip != 'true' }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AUTOMATED_TESTING_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AUTOMATED_TESTING_AWS_SECRET_ACCESS_KEY }}
+          TESTARGS: ${{ matrix.testArgs }}

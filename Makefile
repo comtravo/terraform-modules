@@ -16,14 +16,14 @@ lint:
 build:
 	@$(DOCKER_COMPOSE) build
 
-test-aws:
-	@cd test && go test -tags=aws
+test-integration:
+	@cd test && go test $(TESTARGS)
 
-test-all: test-aws
+test-all: test-integration
 
 test-docker:
 	@$(DOCKER_COMPOSE) run --rm terraform make lint
-	@$(DOCKER_COMPOSE) run --rm terraform make test-all
+	@$(DOCKER_COMPOSE) run --rm -e TESTARGS='$(TESTARGS)' terraform make test-all
 	@$(DOCKER_COMPOSE) down -v
 
 develop:
@@ -31,11 +31,12 @@ develop:
 	@$(DOCKER_COMPOSE_DEVELOP) down -v
 
 generate-docs: fmt lint
-	@find . -maxdepth 1 -type d -not -path '.' -not -path '.github' -not -path 'test' -exec sh -c 'cd {} && $(GENERATE_DOCS_COMMAND)' ';'
+	$(for module in `find . -type f -name "*.tf" -not -path "*/examples/*" -exec dirname "{}" \; | sort -u`; do cd $module && terraform-docs markdown . > README.md && cd -; done)
 
 clean-state:
 	@find . -type f -name 'terraform.tfstate*' | xargs rm -rf
 	@find . -type d -name '.terraform' | xargs rm -rf
+	@find . -type d -name 'terraform.tfstate.d' | xargs rm -rf
 
 clean-all: clean-state
 	@$(DOCKER_COMPOSE) down -v
