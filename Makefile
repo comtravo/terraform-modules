@@ -31,7 +31,8 @@ develop:
 	@$(DOCKER_COMPOSE_DEVELOP) down -v
 
 generate-docs: fmt lint
-	@find . -maxdepth 1 -type d -not -path '.' -not -path '.github' -not -path 'test' -exec sh -c 'cd {} && $(GENERATE_DOCS_COMMAND)' ';'
+	# @find . -maxdepth 1 -type d -not -path '.' -not -path '.github' -not -path 'test' -exec sh -c 'cd {} && $(GENERATE_DOCS_COMMAND)' ';'
+	$(for module in `find . -type f -name "*.tf" -not -path "*/examples/*" -exec dirname "{}" \; | sort -u`; do cd $module && terraform-docs markdown . > README.md && cd -; done)
 
 clean-state:
 	@find . -type f -name 'terraform.tfstate*' | xargs rm -rf
