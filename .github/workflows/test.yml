@@ -44,7 +44,7 @@ jobs:
 
           - module: lambda
             testArgs: -run=TestLambda -timeout=60m
-            testFile: test/aws_ssm_parameter_store_test.go
+            testFile: test/aws_lambda_test.go
 
     steps:
       - id: skip_check
