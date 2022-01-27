@@ -14,6 +14,10 @@ jobs:
             testArgs: -run=TestAPIG
             testFile: test/aws_apig_test.go
 
+          - module: apigV2
+            testArgs: -run=TestAPIGV2
+            testFile: test/aws_apigv2_test.go
+
           - module: firehose
             testArgs: -run=TestFirehose
             testFile: test/aws_firehose_test.go
