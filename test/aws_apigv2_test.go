@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestAPIGV2_httpAPILambdaProxyBasic(t *testing.T) {
+func TestV2APIG_httpAPILambdaProxyBasic(t *testing.T) {
 	t.Parallel()
 
 	apigName := fmt.Sprintf("apig-%s", random.UniqueId())
@@ -24,7 +24,7 @@ func TestAPIGV2_httpAPILambdaProxyBasic(t *testing.T) {
 	APIGV2TerraformApplyAndValidateOutputs(t, terraformOptions)
 }
 
-func TestAPIGV2_httpAPILambdaProxyCORS(t *testing.T) {
+func TestV2APIG_httpAPILambdaProxyCORS(t *testing.T) {
 	t.Parallel()
 
 	apigName := fmt.Sprintf("apig-%s", random.UniqueId())
@@ -37,7 +37,7 @@ func TestAPIGV2_httpAPILambdaProxyCORS(t *testing.T) {
 	APIGV2TerraformApplyAndValidateOutputs(t, terraformOptions)
 }
 
-func TestAPIGV2_httpAPILambdaProxyCustomDomain(t *testing.T) {
+func TestV2APIG_httpAPILambdaProxyCustomDomain(t *testing.T) {
 	t.Parallel()
 
 	apigName := fmt.Sprintf("apig-%s", random.UniqueId())

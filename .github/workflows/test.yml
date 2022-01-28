@@ -14,37 +14,37 @@ jobs:
             testArgs: -run=TestAPIG
             testFile: test/aws_apig_test.go
 
-          # - module: apigV2
-          #   testArgs: -run=TestAPIGV2
-          #   testFile: test/aws_apigv2_test.go
+          - module: apigV2
+            testArgs: -run=TestV2APIG
+            testFile: test/aws_apigv2_test.go
 
-          # - module: firehose
-          #   testArgs: -run=TestFirehose
-          #   testFile: test/aws_firehose_test.go
+          - module: firehose
+            testArgs: -run=TestFirehose
+            testFile: test/aws_firehose_test.go
 
-          # - module: s3
-          #   testArgs: -run=TestS3
-          #   testFile: test/aws_s3_test.go
+          - module: s3
+            testArgs: -run=TestS3
+            testFile: test/aws_s3_test.go
 
-          # - module: sfn
-          #   testArgs: -run=TestSFN
-          #   testFile: test/aws_sfn_test.go
+          - module: sfn
+            testArgs: -run=TestSFN
+            testFile: test/aws_sfn_test.go
 
-          # - module: vpc
-          #   testArgs: -run=TestVPC -timeout=120m
-          #   testFile: test/aws_vpc_test.go
+          - module: vpc
+            testArgs: -run=TestVPC -timeout=120m
+            testFile: test/aws_vpc_test.go
 
-          # - module: vpc-legacy
-          #   testArgs: -run=TestLegacyVPC -timeout=120m
-          #   testFile: test/aws_vpc_legacy_test.go
+          - module: vpc-legacy
+            testArgs: -run=TestLegacyVPC -timeout=120m
+            testFile: test/aws_vpc_legacy_test.go
 
-          # - module: parameter-store
-          #   testArgs: -run=TestSSMParameterStore
-          #   testFile: test/aws_ssm_parameter_store_test.go
+          - module: parameter-store
+            testArgs: -run=TestSSMParameterStore
+            testFile: test/aws_ssm_parameter_store_test.go
 
-          # - module: lambda
-          #   testArgs: -run=TestLambda -timeout=60m
-          #   testFile: test/aws_lambda_test.go
+          - module: lambda
+            testArgs: -run=TestLambda -timeout=60m
+            testFile: test/aws_lambda_test.go
 
     steps:
       - id: skip_check
