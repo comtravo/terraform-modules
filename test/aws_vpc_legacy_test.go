@@ -3,7 +3,6 @@ package test
 import (
 	"fmt"
 	"regexp"
-	"strings"
 	"testing"
 	"time"
 
@@ -260,7 +259,7 @@ func LegacyVPCValidateVPCRoute53ZoneName(t *testing.T, terraformOptions *terrafo
 	private_subdomain := terraform.Output(t, terraformOptions, "private_subdomain")
 
 	assert.Equal(t, terraformOptions.Vars["subdomain"], public_subdomain)
-	assert.Equal(t, fmt.Sprintf("%s-net0ps.com", strings.ToLower(terraformOptions.Vars["vpc_name"].(string))), private_subdomain)
+	assert.Equal(t, fmt.Sprintf("%s-net0ps.com", terraformOptions.Vars["vpc_name"].(string)), private_subdomain)
 }
 
 func LegacyVPCValidateVPCRoutingTables(t *testing.T, terraformOptions *terraform.Options) {
