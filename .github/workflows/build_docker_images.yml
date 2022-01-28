@@ -6,12 +6,14 @@ on:
   pull_request:
     paths:
     - docker_images/**
+    - .github/workflows/build_docker_images.yml
 
   push:
     branches:
       - main
     paths:
     - docker_images/**
+    - .github/workflows/build_docker_images.yml
 
 defaults:
   run:
@@ -37,8 +39,8 @@ jobs:
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
 
       - run: make build
-        if: ${{ steps.skip_check.outputs.should_skip != 'true' }}
+        if: ${{ steps.skip_check.outputs.should_skip != 'true' || github.ref == 'refs/heads/master' }}
 
-      - run: make build && make push
+      - run: make push
         if: github.ref == 'refs/heads/master'
 
