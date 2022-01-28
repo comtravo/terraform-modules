@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo hello world
-#     uses: ./.github/workflows/test_workflow.yml
-#     with:
-#       testArgs: -run=TestAPIG
+
+  call-workflow:
+    uses: ./.github/workflows/test_workflow.yml
+    with:
+      testArgs: -run=TestAPIG
