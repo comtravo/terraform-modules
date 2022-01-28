@@ -3,8 +3,8 @@ name: API Gateway
 on:
   pull_request:
     paths:
-    - apig/**
-    - test/aws_apig_test.go
+      - apig/**
+      - test/aws_apig_test.go
 
 jobs:
   test:
