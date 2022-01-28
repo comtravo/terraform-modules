@@ -6,12 +6,14 @@ on:
   pull_request:
     paths:
     - docker_images/**
+    - build_docker_images.yml
 
   push:
     branches:
       - main
     paths:
     - docker_images/**
+    - build_docker_images.yml
 
 defaults:
   run:
