@@ -11,7 +11,7 @@ defaults:
     working-directory: docker_images
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - id: skip_check
@@ -30,3 +30,7 @@ jobs:
 
       - run: make build
         if: ${{ steps.skip_check.outputs.should_skip != 'true' }}
+
+      - run: make build && make push
+        if: github.ref == 'refs/heads/master'
+
