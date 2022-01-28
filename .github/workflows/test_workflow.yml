@@ -1,0 +1,19 @@
+name: test-workflow
+
+on:
+  workflow_call:
+    inputs:
+      testArgs:
+        required: true
+        type: string
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: make build
+      - run: make test-docker
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AUTOMATED_TESTING_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AUTOMATED_TESTING_AWS_SECRET_ACCESS_KEY }}
+          TESTARGS: ${{ inputs.testArgs }}
