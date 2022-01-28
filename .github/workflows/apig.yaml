@@ -1,0 +1,18 @@
+name: API Gateway
+
+on:
+  pull_request:
+    paths:
+    - apig/**
+    - test/aws_apig_test.go
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: .github/actions/test
+        with:
+          module: apig
+          testArgs: -run=TestAPIG
+          testFile: test/aws_apig_test.go
+
