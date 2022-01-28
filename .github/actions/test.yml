@@ -3,13 +3,7 @@ name: test-workflow
 on:
   workflow_call:
     inputs:
-      module:
-        required: true
-        type: string
       testArgs:
-        required: true
-        type: string
-      testFile:
         required: true
         type: string
 
@@ -17,7 +11,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
       - run: make build
       - run: make test-docker
         env:
