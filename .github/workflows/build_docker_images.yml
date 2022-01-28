@@ -39,8 +39,8 @@ jobs:
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
 
       - run: make build
-        if: ${{ steps.skip_check.outputs.should_skip != 'true' || github.ref == 'refs/heads/master' }}
+        if: ${{ steps.skip_check.outputs.should_skip != 'true' || github.ref == 'refs/heads/main' }}
 
       - run: make push
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/main'
 
