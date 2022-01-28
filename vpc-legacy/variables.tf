@@ -68,17 +68,17 @@ locals {
   replication_count = local.enable_count * var.replication_factor
 }
 
-variable private_subnet_tags {
+variable "private_subnet_tags" {
   type    = map(string)
   default = {}
 }
 
-variable public_subnet_tags {
+variable "public_subnet_tags" {
   type    = map(string)
   default = {}
 }
 
-variable tags {
+variable "tags" {
   type    = map(string)
   default = {}
 }

@@ -30,7 +30,7 @@ resource "aws_apigatewayv2_api" "this" {
   body          = var.body
   version       = sha256(var.body)
 
-  dynamic cors_configuration {
+  dynamic "cors_configuration" {
     for_each = var.cors_configuration
     content {
       allow_credentials = cors_configuration.value["allow_credentials"]
