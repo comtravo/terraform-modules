@@ -31,7 +31,7 @@ func TestLegacyVPCApplyEnabledBasic(t *testing.T) {
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
-	// LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 25)
+	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 25)
 	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
 }
 
@@ -66,7 +66,7 @@ func TestLegacyVPCApplyEnabledBasic_tags(t *testing.T) {
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
-	// LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 25)
+	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 25)
 	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
 }
 
@@ -90,7 +90,7 @@ func TestLegacyVPCApplyEnabledReplicationFactor(t *testing.T) {
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
-	// LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 21)
+	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 21)
 	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
 }
 
@@ -114,7 +114,7 @@ func TestLegacyVPCApplyEnabledSingleAvailabilityZone(t *testing.T) {
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
-	// LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 21)
+	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 21)
 	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
 }
 
@@ -138,7 +138,7 @@ func TestLegacyVPCApplyEnabledNoPublicSubdomain(t *testing.T) {
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
-	// LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 24)
+	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 24)
 	LegacyVPCValidateTerraformModuleOutputs(t, terraformOptions)
 }
 
@@ -162,7 +162,7 @@ func TestLegacyVPCApplyDisabled_Basic(t *testing.T) {
 	t.Logf("Terraform module inputs: %+v", *terraformOptions)
 	defer terraform.Destroy(t, terraformOptions)
 
-	// LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 0)
+	LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t, terraformOptions, 0)
 }
 
 func LegacyVPCSetupTestCase(t *testing.T, terraformModuleVars map[string]interface{}) *terraform.Options {
@@ -276,7 +276,8 @@ func LegacyVPCValidateDependId(t *testing.T, terraformOptions *terraform.Options
 	assert.NotEqual(t, "", depends_id)
 }
 
-// func LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t *testing.T, terraformOptions *terraform.Options, expectedNumberOfResourcesCreated int) {
-// 	terraform_apply_output := terraform.InitAndApply(t, terraformOptions)
-// 	assert.Contains(t, terraform_apply_output, fmt.Sprintf("Apply complete! Resources: %d added, 0 changed, 0 destroyed.", expectedNumberOfResourcesCreated))
-// }
+func LegacyVPCModuleTerraformApplyAndVerifyResourcesCreated(t *testing.T, terraformOptions *terraform.Options, expectedNumberOfResourcesCreated int) {
+	// terraform_apply_output := terraform.InitAndApply(t, terraformOptions)
+	terraform.InitAndApply(t, terraformOptions)
+	// assert.Contains(t, terraform_apply_output, fmt.Sprintf("Apply complete! Resources: %d added, 0 changed, 0 destroyed.", expectedNumberOfResourcesCreated))
+}
