@@ -18,7 +18,7 @@
 */
 
 resource "aws_cloudwatch_log_group" "this" {
-  name              = "/aws/apigateway/${var.name}"
+  name              = "/aws/vendedlogs/apigateway/${var.name}"
   retention_in_days = var.access_log_settings.retention_in_days
 
   tags = var.tags
