@@ -223,6 +223,10 @@ resource "aws_route53_record" "internal" {
   }
 }
 
+output "name" {
+  value       = var.name
+  description = "ECS service name"
+}
 
 output "aws_alb_target_group" {
   value       = try(aws_alb_target_group.service[0], {})
