@@ -1,6 +1,6 @@
 #!make
 
-TERRAFORM_VERSION = 0.14.11
+TERRAFORM_VERSION = 1.1.4
 DOCKER_BASE_IMAGE = comtravo/terraform:py3-$(TERRAFORM_VERSION)-1.0.0
 DOCKER_WORKHORSE_IMAGE = comtravo/terraform:test-workhorse-$(TERRAFORM_VERSION)-1.0.0
 
