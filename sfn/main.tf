@@ -15,7 +15,7 @@
 * MIT Licensed. See [LICENSE](./LICENSE) for full details.
 */
 
-variable config {
+variable "config" {
   type = object({
     name : string
     definition : string
@@ -23,7 +23,7 @@ variable config {
   description = "Step function configuration"
 }
 
-variable role_arn {
+variable "role_arn" {
   type        = string
   description = "IAM role"
 }
@@ -34,7 +34,7 @@ resource "aws_sfn_state_machine" "sfn_state_machine" {
   definition = var.config.definition
 }
 
-output state_machine_arn {
+output "state_machine_arn" {
   value       = aws_sfn_state_machine.sfn_state_machine.id
   description = "AWS step function arn"
 }

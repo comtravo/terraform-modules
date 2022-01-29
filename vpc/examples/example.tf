@@ -25,7 +25,7 @@ module "datascience_vpc" {
   enable             = true
   vpc_name           = terraform.workspace
   cidr               = "10.30.0.0/16"
-  availability_zones = "${data.aws_availability_zones.available.names}"
+  availability_zones = data.aws_availability_zones.available.names
 
   private_subnets = local.private_subnets
 

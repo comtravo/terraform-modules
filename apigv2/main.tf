@@ -18,7 +18,7 @@
 */
 
 resource "aws_cloudwatch_log_group" "this" {
-  name              = "/aws/apigateway/${var.name}"
+  name              = "/aws/vendedlogs/apigateway/${var.name}"
   retention_in_days = var.access_log_settings.retention_in_days
 
   tags = var.tags
@@ -30,7 +30,7 @@ resource "aws_apigatewayv2_api" "this" {
   body          = var.body
   version       = sha256(var.body)
 
-  dynamic cors_configuration {
+  dynamic "cors_configuration" {
     for_each = var.cors_configuration
     content {
       allow_credentials = cors_configuration.value["allow_credentials"]

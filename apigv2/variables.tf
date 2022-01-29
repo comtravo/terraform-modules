@@ -21,7 +21,7 @@ variable "stage" {
 variable "tags" {
   default     = {}
   description = "Tags for resources"
-  type        = map
+  type        = map(string)
 }
 
 variable "cors_configuration" {
