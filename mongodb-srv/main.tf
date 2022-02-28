@@ -48,7 +48,7 @@ resource "aws_route53_record" "srv" {
   type    = "SRV"
   ttl     = "60"
 
-  records = [for member in var.members : "${member.priority} ${member.weight} ${member.port} ${member.host}"]
+  records = [for member in var.members : "${member.priority} ${member.weight} ${member.port} ${member.hostname}"]
 }
 
 output "srv" {
