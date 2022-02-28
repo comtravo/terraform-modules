@@ -26,7 +26,7 @@ variable "txt_records" {
 variable "members" {
   description = "Members of the mongoDB replicaset"
   type = list(object({
-    hostname = string
+    host = string
     port     = string
     priority = number
     weight   = number
