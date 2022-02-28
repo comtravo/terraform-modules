@@ -26,7 +26,7 @@ variable "txt_records" {
 variable "members" {
   description = "Members of the mongoDB replicaset"
   type = list(object({
-    hostname = string
+    host = string
     port     = string
     priority = number
     weight   = number
@@ -48,7 +48,7 @@ resource "aws_route53_record" "srv" {
   type    = "SRV"
   ttl     = "60"
 
-  records = [for member in var.members : "${member.priority} ${member.weight} ${member.port} ${member.hostname}"]
+  records = [for member in var.members : "${member.priority} ${member.weight} ${member.port} ${member.host}"]
 }
 
 output "srv" {
