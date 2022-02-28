@@ -18,15 +18,20 @@ variable "hostname" {
   type        = string
 }
 
+variable "domain" {
+  description = "Domain name for members"
+  type        = string
+}
+
 variable "txt_records" {
   description = "MongoDB replicaset TXT records"
   type        = list(string)
 }
 
 variable "members" {
-  description = "Members of the mongoDB replicaset"
+  description = "Members of the MongoDB replicaset"
   type = list(object({
-    host = string
+    host     = string
     port     = string
     priority = number
     weight   = number
@@ -40,6 +45,30 @@ resource "aws_route53_record" "txt" {
   ttl     = "60"
 
   records = var.txt_records
+}
+
+locals {
+  members = { for member in var.members : "${member.host}:${member.port}" => member }
+}
+
+resource "random_pet" "member" {
+  for_each = local.members
+
+  keepers = {
+    member = each.key
+  }
+}
+
+resource "aws_route53_record" "member" {
+  for_each = local.members
+
+  zone_id = var.zone_id
+  name    = "${lookup(random_pet.member[each.key])}.${var.domain}"
+  type    = "CNAME"
+  ttl     = "60"
+
+  records = [each.value.private_dns]
+
 }
 
 resource "aws_route53_record" "srv" {
