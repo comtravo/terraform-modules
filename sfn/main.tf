@@ -34,7 +34,11 @@ resource "aws_sfn_state_machine" "sfn_state_machine" {
   definition = var.config.definition
 }
 
+data "aws_region" "current" {}
+
+data "aws_caller_identity" "current" {}
+
 output "state_machine_arn" {
-  value       = aws_sfn_state_machine.sfn_state_machine.id
+  value       = "arn:aws:states:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:stateMachine:${var.config.name}"
   description = "AWS step function arn"
 }
