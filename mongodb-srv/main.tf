@@ -63,7 +63,7 @@ resource "aws_route53_record" "member" {
   for_each = local.members
 
   zone_id = var.zone_id
-  name    = "${lookup(random_pet.member[each.key])}.${var.domain}"
+  name    = "${random_pet.member[each.key].id}.${var.domain}"
   type    = "CNAME"
   ttl     = "60"
 
@@ -88,4 +88,9 @@ output "srv" {
 output "txt" {
   value       = aws_route53_record.txt
   description = "TXT record"
+}
+
+output "members" {
+  value       = aws_route53_record.member
+  description = "MongoDB members"
 }
